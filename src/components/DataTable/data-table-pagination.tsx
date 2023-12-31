@@ -21,7 +21,7 @@ export function DataTablePagination() {
   return (
     <div className='flex items-center justify-between px-2 max-[630px]:flex-col gap-y-2'>
       <div className='flex-1 text-sm text-muted-foreground'>
-        {table.getFilteredSelectedRowModel().rows.length} of{' '}
+        {table.getFilteredSelectedRowModel().rows.length} de{' '}
         {table.getFilteredRowModel().rows.length} linhas(s) selecionadas.
       </div>
       <div className='flex items-center space-x-6 lg:space-x-8 max-[400px]:flex-col max-[400px]:space-x-0 gap-y-2'>
@@ -57,7 +57,7 @@ export function DataTablePagination() {
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}
             >
-              <span className='sr-only'>Go to first page</span>
+              <span className='sr-only'>Ir para a primeira página</span>
               <DoubleArrowLeftIcon className='h-4 w-4' />
             </Button>
             <Button
@@ -66,7 +66,7 @@ export function DataTablePagination() {
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
-              <span className='sr-only'>Go to previous page</span>
+              <span className='sr-only'>Ir para a página anterior</span>
               <ChevronLeftIcon className='h-4 w-4' />
             </Button>
             <Button
@@ -75,7 +75,7 @@ export function DataTablePagination() {
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
-              <span className='sr-only'>Go to next page</span>
+              <span className='sr-only'>Ir para a primeira página</span>
               <ChevronRightIcon className='h-4 w-4' />
             </Button>
             <Button
@@ -84,7 +84,7 @@ export function DataTablePagination() {
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}
             >
-              <span className='sr-only'>Go to last page</span>
+              <span className='sr-only'>Ir para a última página</span>
               <DoubleArrowRightIcon className='h-4 w-4' />
             </Button>
           </div>

@@ -1,7 +1,6 @@
 'use client';
 
 import DataTable from '@/components/DataTable/data-table';
-import { StudentsTableColumns } from '@/modules/students/columns';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { supabase } from '../../../../supabase';
@@ -9,33 +8,31 @@ import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useRouter } from 'next/navigation';
-import { useDeleteStudents } from '@/modules/students/api';
+import { ResponsiblesTableColumns } from '@/modules/responsibles/columns';
+import { useDeleteResponsibles } from '@/modules/responsibles/api';
 
 export default function Page() {
   const router = useRouter();
 
-  const [data, setData] = useState<any[]>([]);
+  const [students, setStudents] = useState<any[]>([]);
   const [responsibles, setResponsibles] = useState<any[]>([]);
-  const [classes, setClasses] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const { deleteStudents } = useDeleteStudents();
+  const { deleteResponsibles } = useDeleteResponsibles();
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.from('students').select('*');
+      const { data: studentsData, error: studentsError } = await supabase
+        .from('students')
+        .select('*');
       const { data: responsiblesData, error: responsiblesError } =
         await supabase.from('responsibles').select('*');
-      const { data: classesData, error: classesError } = await supabase
-        .from('classes')
-        .select('*');
-      if (error || responsiblesError || classesError)
-        throw { error, responsiblesError, classesError };
+      if (studentsError || responsiblesError)
+        throw { studentsError, responsiblesError };
 
-      setData(data);
+      setStudents(studentsData);
       setResponsibles(responsiblesData);
-      setClasses(classesData);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -47,29 +44,29 @@ export default function Page() {
   }, []);
 
   const onDelete = async (ids: string[]) => {
-    await deleteStudents(ids);
+    await deleteResponsibles(ids);
     fetchData();
   };
 
   return (
     <main className='flex flex-col items-center w-screen justify-center p-12 px-24 overflow-hidden max-md:px-3 max-md:py-3'>
-      <PageHeader title='Alunos' subtitle='Alunos cadastrados na plataforma'>
+      <PageHeader title='Responsáveis' subtitle='Responsáveis cadastrados na plataforma'>
         <Button
           size='sm'
           className='relative'
-          onClick={() => router.push('/alunos/cadastro')}
+          onClick={() => router.push('/responsaveis/cadastro')}
         >
           <PlusIcon className='h-5 w-5 mr-2' />
-          <p className='m-0 whitespace-nowrap inline-block'>Cadastrar aluno</p>
+          <p className='m-0 whitespace-nowrap inline-block'>Cadastrar responsável</p>
         </Button>
       </PageHeader>
       <DataTable
-        data={data || []}
-        columns={StudentsTableColumns(responsibles, classes, onDelete)}
+        data={responsibles || []}
+        columns={ResponsiblesTableColumns(students, onDelete)}
         body={!loading && <DataTable.Body />}
         toolbar={
           <DataTable.Toolbar
-            placeholder='Buscar aluno...'
+            placeholder='Buscar por nome...'
             searchId='name'
             onDelete={(ids) => {
               onDelete(ids);

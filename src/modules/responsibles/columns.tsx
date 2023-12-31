@@ -8,13 +8,11 @@ import { DataTableColumnHeader } from '@/components/DataTable/data-table-column-
 import { DataTableRowActions } from '@/components/DataTable/data-table-row-actions';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Student } from './schema';
-import { parseISODateWithOffset } from '@/lib/utils';
 import { translate } from '@/lib/translate';
 import Link from 'next/link';
 
-export function StudentsTableColumns(
-  responsibles: { id: string; name: string }[],
-  classes: { id: string; grade: string; period: string }[],
+export function ResponsiblesTableColumns(
+  students: { id: string; name: string }[],
   onDelete: (ids: string[]) => void
 ): ColumnDef<Student>[] {
   return [
@@ -50,71 +48,104 @@ export function StudentsTableColumns(
     {
       accessorKey: 'name',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Aluno' />
-      ),
-      cell: ({ row }) => {
-        return (
-          <div className='flex space-x-2'>
-            <span className='max-w-[500px] truncate font-medium'>
-              {row.getValue('name')}
-            </span>
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: 'class_id',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Turma' />
-      ),
-      cell: ({ row }) => {
-        const classroom = classes.find(
-          (e) => e.id === row.getValue('class_id')
-        );
-
-        return (
-          <div className='flex space-x-2'>
-            <span className='max-w-[500px] truncate font-medium'>
-              {classroom
-                ? `${classroom.grade} - ${translate.period[classroom.period]}`
-                : '-'}
-            </span>
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: 'responsible_id',
-      header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Responsável' />
       ),
       cell: ({ row }) => {
-        const responsibleName = responsibles.find(
-          (e) => e.id === row.getValue('responsible_id')
-        )?.name;
-
         return (
           <div className='flex space-x-2'>
             <span className='max-w-[500px] truncate font-medium'>
-              {responsibleName}
+              {row.getValue('name') || '-'}
             </span>
           </div>
         );
       },
     },
     {
-      accessorKey: 'date_of_birth',
+      accessorKey: 'cpf',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Data de nascimento' />
+        <DataTableColumnHeader column={column} title='CPF' />
       ),
       cell: ({ row }) => {
-        const date = parseISODateWithOffset(row.getValue('date_of_birth'));
-
         return (
           <div className='flex space-x-2'>
             <span className='max-w-[500px] truncate font-medium'>
-              {date && format(date, 'dd/MM/yyyy')}
+              {row.getValue('cpf') || '-'}
             </span>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'phone',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Telefone' />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className='flex space-x-2'>
+            <span className='max-w-[500px] truncate font-medium'>
+              {row.getValue('phone') || '-'}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'email',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Email' />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className='flex space-x-2'>
+            <span className='max-w-[500px] truncate font-medium'>
+              {row.getValue('email') || '-'}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'responsible_type',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Tipo' />
+      ),
+      cell: ({ row }) => {
+        const value: string = row.getValue('responsible_type');
+        return (
+          <div className='flex space-x-2'>
+            <span className='max-w-[500px] truncate font-medium'>
+              {translate.responsible_types[value] || '-'}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'children',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Crianças' />
+      ),
+      cell: ({ row }) => {
+        const childrenIds: string[] = row.getValue('children');
+        const children = students.filter((student) =>
+          childrenIds?.includes(student.id)
+        );
+
+        return (
+          <div className='flex flex-col space-y-1'>
+            {children.length > 0 ? (
+              children.map((child, index) => (
+                <span
+                  key={index}
+                  className='max-w-[500px] truncate font-medium'
+                >
+                  {child.name}
+                </span>
+              ))
+            ) : (
+              <span className='max-w-[500px] truncate font-medium'>-</span>
+            )}
           </div>
         );
       },
@@ -128,7 +159,7 @@ export function StudentsTableColumns(
               <Link
                 className='w-full h-full'
                 href={{
-                  pathname: `/alunos/${row.original.id}`,
+                  pathname: `/responsaveis/${row.original.id}`,
                 }}
               >
                 Visualizar
