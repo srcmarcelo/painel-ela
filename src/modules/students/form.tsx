@@ -13,7 +13,7 @@ const StudentSchema = z.object({
   father: formFields.select_option.describe('Pai').optional(),
   responsible: formFields.select_option.describe('Responsável').optional(),
   classroom: formFields.select_option.describe('Turma').optional(),
-  date_of_birth: formFields.date_picker.describe('Data de nascimento'),
+  date_of_birth: formFields.date_input.describe('Data de nascimento'),
 });
 
 export function StudentForm({
@@ -41,8 +41,10 @@ export function StudentForm({
       father_id: values.father,
       class_id: values.classroom,
     };
-    await createStudents(formattedValues);
-    router.push('/alunos');
+    const { error } = await createStudents(formattedValues);
+    if (!error) {
+      router.push('/alunos');
+    }
   };
 
   const classesData: Option[] =

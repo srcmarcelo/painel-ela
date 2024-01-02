@@ -36,7 +36,10 @@ export function useFetchStudents() {
 export function useCreateStudents() {
   const { toast } = useToast();
 
-  async function createStudents(values: any) {
+  async function createStudents(values: any): Promise<{
+    data?: any;
+    error?: Error | unknown;
+  }> {
     try {
       const { data, error } = await supabase
         .from('students')
@@ -46,8 +49,11 @@ export function useCreateStudents() {
       if (error || !data) {
         console.log('error:', error);
         toast({
-          description: 'Erro ao registrar aluno',
+          variant: 'destructive',
+          title: 'Erro ao registrar aluno',
+          description: error.message,
         });
+        return { data, error };
       } else {
         toast({ description: 'Aluno registrado com sucesso' });
         return { data, error };

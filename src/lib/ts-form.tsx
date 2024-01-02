@@ -41,7 +41,7 @@ import { Label } from '@/components/ui/label';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { XIcon } from 'lucide-react';
-import { BRL_CPF, BRL_PHONE, maskToCurrency } from './masks';
+import { BRL_CPF, BRL_PHONE, BR_DATE, maskToCurrency } from './masks';
 import ptBR from 'date-fns/locale/pt-BR';
 
 export type Option = {
@@ -486,6 +486,28 @@ function DatePickerField({ disablePastDate }: { disablePastDate?: boolean }) {
   );
 }
 
+function DateInputField() {
+  const { field, error } = useTsController<string>();
+  const { label } = useDescription();
+
+  return (
+    <div className='space-y-1 flex flex-col'>
+      <span>{label}</span>
+      <InputMask
+        className='flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50'
+        mask={BR_DATE}
+        onChange={(e) => {
+          field.onChange(e.target.value);
+        }}
+        value={field.value}
+      />
+      {error?.errorMessage && (
+        <span className='text-destructive'>{error?.errorMessage}</span>
+      )}
+    </div>
+  );
+}
+
 export const formFields = {
   text: z.string({ required_error: 'Campo obrigatório' }),
   number: z.number({ required_error: 'Campo obrigatório' }),
@@ -532,6 +554,10 @@ export const formFields = {
     z.date({ required_error: 'Campo obrigatório' }),
     'date_picker'
   ),
+  date_input: createUniqueFieldSchema(
+    z.string({ required_error: 'Campo obrigatório' }),
+    'date_input'
+  ),
 };
 
 const mapping = [
@@ -546,6 +572,7 @@ const mapping = [
   [formFields.multi_select, MultiSelectField] as const,
   [formFields.card_radio_group, CardRadioButtonField] as const,
   [formFields.date_picker, DatePickerField] as const,
+  [formFields.date_input, DateInputField] as const,
 ] as const;
 
 function FormContainer({

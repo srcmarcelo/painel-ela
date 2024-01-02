@@ -119,6 +119,19 @@ export const BRL_PHONE = [
   /\d/,
 ];
 
+export const BR_DATE = [
+  /[0-3]/,
+  /\d/,
+  '/',
+  /[0-1]/,
+  /\d/,
+  '/',
+  /\d/,
+  /\d/,
+  /\d/,
+  /\d/,
+];
+
 export const CREDIT_CARD = [
   /\d/,
   /\d/,
