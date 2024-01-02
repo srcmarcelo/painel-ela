@@ -1,11 +1,16 @@
 import { MyForm, Option, formFields } from '@/lib/ts-form';
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { FileText, Loader } from 'lucide-react';
 import { translate } from '@/lib/translate';
-import { useCreateStudents } from './api';
 import { useRouter } from 'next/navigation';
+import { useStudents } from './api';
+import { useClasses } from '../classes/api';
+import { useResponsibles } from '../responsibles/api';
+import { format, parse } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { parseISODateWithOffset } from '@/lib/utils';
 
 const StudentSchema = z.object({
   name: formFields.text.describe('Nome'),
@@ -18,30 +23,90 @@ const StudentSchema = z.object({
 
 export function StudentForm({
   currentId,
-  loading,
-  classes,
-  responsibles,
   onSubmit: _onSubmit,
 }: {
   currentId?: string;
-  loading: boolean;
-  classes: any[];
-  responsibles: any[];
   onSubmit?: (values: any) => void;
 }) {
   const router = useRouter();
-  const { createStudents } = useCreateStudents();
+
+  const { createStudents, fetchStudentById, upadteStudent } = useStudents();
+  const { fetchClasses } = useClasses();
+  const { fetchResponsibles } = useResponsibles();
+
+  const [classes, setClasses] = useState<any[]>([]);
+  const [responsibles, setResponsibles] = useState<any[]>([]);
+  const [student, setStudent] = useState<any>();
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const { data: classesData, error: classesError } = await fetchClasses();
+        const { data: responsibleData, error: responsiblesError } =
+          await fetchResponsibles();
+        if (currentId) {
+          const { data: studentData } = await fetchStudentById(currentId);
+          setStudent(studentData);
+        }
+
+        if (classesError || responsiblesError)
+          throw { classesError, responsiblesError };
+
+        setClasses(classesData);
+        setResponsibles(responsibleData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const defaultValues = useMemo(() => {
+    const formatedValues = student
+      ? {
+          name: student.name,
+          mother: student.mother_id,
+          father: student.father_id,
+          responsible: student.responsible_id,
+          classroom: student.class_id,
+          date_of_birth: format(
+            parseISODateWithOffset(student.date_of_birth),
+            'dd/MM/yyyy',
+            {
+              locale: ptBR,
+            }
+          ),
+        }
+      : {};
+
+    return formatedValues;
+  }, [student]);
 
   const onSubmit = async (values: z.infer<typeof StudentSchema>) => {
+    const parsedDateOfBirth = parse(
+      values.date_of_birth,
+      'dd/MM/yyyy',
+      new Date()
+    );
+
     const formattedValues = {
       name: values.name,
-      date_of_birth: values.date_of_birth,
+      date_of_birth: parsedDateOfBirth,
       responsible_id: values.responsible,
       mother_id: values.mother,
       father_id: values.father,
       class_id: values.classroom,
     };
-    const { error } = await createStudents(formattedValues);
+
+    const { error } = currentId
+      ? await upadteStudent(formattedValues, currentId)
+      : await createStudents(formattedValues);
+
     if (!error) {
       router.push('/alunos');
     }
@@ -91,7 +156,7 @@ export function StudentForm({
           options: responsiblesData,
         } as any,
       }}
-      // defaultValues={defaultValues as any}
+      defaultValues={defaultValues as any}
       onSubmit={onSubmit}
     >
       {({ name, classroom, mother, father, responsible, date_of_birth }) => {

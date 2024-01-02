@@ -1,7 +1,6 @@
 'use client';
 
 import DataTable from '@/components/DataTable/data-table';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { supabase } from '../../../../supabase';
 import { PageHeader } from '@/components/page-header';
@@ -9,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useRouter } from 'next/navigation';
 import { ResponsiblesTableColumns } from '@/modules/responsibles/columns';
-import { useDeleteResponsibles } from '@/modules/responsibles/api';
+import { useResponsibles } from '@/modules/responsibles/api';
 
 export default function Page() {
   const router = useRouter();
@@ -18,7 +17,7 @@ export default function Page() {
   const [responsibles, setResponsibles] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const { deleteResponsibles } = useDeleteResponsibles();
+  const { deleteResponsibles } = useResponsibles();
 
   const fetchData = async () => {
     setLoading(true);

@@ -9,7 +9,7 @@ import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useRouter } from 'next/navigation';
-import { useDeleteStudents } from '@/modules/students/api';
+import { useStudents } from '@/modules/students/api';
 
 export default function Page() {
   const router = useRouter();
@@ -19,7 +19,7 @@ export default function Page() {
   const [classes, setClasses] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const { deleteStudents } = useDeleteStudents();
+  const { deleteStudents } = useStudents();
 
   const fetchData = async () => {
     setLoading(true);

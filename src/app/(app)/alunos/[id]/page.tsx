@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../../../../supabase';
 import { useParams } from 'next/navigation';
 import { translate } from '@/lib/translate';
+import { Button } from '@/components/ui/button';
+import { StudentForm } from '@/modules/students/form';
 
 export default function Page() {
   const [student, setStudent] = useState<any>();
@@ -12,12 +14,12 @@ export default function Page() {
   const [responsible, setResponsible] = useState<any>();
   const [classroom, setClassroom] = useState<any>();
   const [loading, setLoading] = useState<boolean>(true);
+  const [edit, setEdit] = useState<boolean>(false);
 
   const params = useParams();
 
   const fetchData = async () => {
     setLoading(true);
-    console.log('params:', params);
     try {
       const { data, error } = await supabase
         .from('students')
@@ -79,38 +81,48 @@ export default function Page() {
         </div>
       ) : (
         <div className='flex flex-col w-full h-full'>
-          <div>
+          <div className='flex justify-between items-center'>
             <h1 className='font-medium text-3xl'>{student?.name}</h1>
+            <Button
+              onClick={() => setEdit(!edit)}
+              variant={edit ? 'outline' : 'default'}
+            >
+              {edit ? 'Voltar' : 'Editar'}
+            </Button>
           </div>
           <div className='mt-4'>
-            <div className='border rounded-md p-4 space-y-4'>
-              {classroom && (
-                <div>
-                  <p className='text-muted-foreground'>Turma</p>
-                  <p>{`${classroom.grade} - ${
-                    translate.period[classroom.period]
-                  }`}</p>
-                </div>
-              )}
-              {mother && (
-                <div>
-                  <p className='text-muted-foreground'>Mãe</p>
-                  <p>{mother.name}</p>
-                </div>
-              )}
-              {father && (
-                <div>
-                  <p className='text-muted-foreground'>Pai</p>
-                  <p>{father.name}</p>
-                </div>
-              )}
-              {responsible && (
-                <div>
-                  <p className='text-muted-foreground'>Responsável</p>
-                  <p>{responsible.name}</p>
-                </div>
-              )}
-            </div>
+            {edit ? (
+              <StudentForm onSubmit={() => setEdit(false)} currentId={student?.id} />
+            ) : (
+              <div className='border rounded-md p-4 space-y-4'>
+                {classroom && (
+                  <div>
+                    <p className='text-muted-foreground'>Turma</p>
+                    <p>{`${classroom.grade} - ${
+                      translate.period[classroom.period]
+                    }`}</p>
+                  </div>
+                )}
+                {mother && (
+                  <div>
+                    <p className='text-muted-foreground'>Mãe</p>
+                    <p>{mother.name}</p>
+                  </div>
+                )}
+                {father && (
+                  <div>
+                    <p className='text-muted-foreground'>Pai</p>
+                    <p>{father.name}</p>
+                  </div>
+                )}
+                {responsible && (
+                  <div>
+                    <p className='text-muted-foreground'>Responsável</p>
+                    <p>{responsible.name}</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}

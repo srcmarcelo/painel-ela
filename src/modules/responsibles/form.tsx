@@ -1,10 +1,11 @@
 import { MyForm, Option, formFields } from '@/lib/ts-form';
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { FileText, Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useCreateResponsibles } from './api';
+import { useResponsibles } from './api';
+import { useStudents } from '../students/api';
 
 const ResponsibleSchema = z.object({
   name: formFields.text.describe('Nome'),
@@ -17,21 +18,58 @@ const ResponsibleSchema = z.object({
 
 export function ResponsibleForm({
   currentId,
-  loading,
-  students,
   onSubmit: _onSubmit,
 }: {
   currentId?: string;
-  loading: boolean;
-  students: any[];
   onSubmit?: (values: any) => void;
 }) {
   const router = useRouter();
-  const { createResponsibles } = useCreateResponsibles();
+  const { createResponsibles, fetchResponsibleById, upadteResponsible } =
+    useResponsibles();
+  const { fetchStudents } = useStudents();
+
+  const [students, setStudents] = useState<any[]>([]);
+  const [responsible, setResponsible] = useState<any>();
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const { data: studentsData, error: studentsError } =
+          await fetchStudents();
+        if (currentId) {
+          const { data: responsibleData } = await fetchResponsibleById(
+            currentId
+          );
+          setResponsible(responsibleData);
+        }
+
+        if (studentsError) throw studentsError;
+
+        setStudents(studentsData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const defaultValues = useMemo(() => {
+    return responsible || {};
+  }, [responsible]);
 
   const onSubmit = async (values: z.infer<typeof ResponsibleSchema>) => {
-    await createResponsibles(values);
-    router.push('/responsaveis');
+    const { error } = currentId
+      ? await upadteResponsible(values, currentId)
+      : await createResponsibles(values);
+
+    if (!error) {
+      router.push('/responsaveis');
+    }
   };
 
   const studentsData: Option[] =
@@ -70,7 +108,7 @@ export function ResponsibleForm({
           options: studentsData,
         } as any,
       }}
-      // defaultValues={defaultValues as any}
+      defaultValues={defaultValues as any}
       onSubmit={onSubmit}
     >
       {({ name, cpf, phone, email, responsible_type, children }) => {

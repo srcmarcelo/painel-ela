@@ -1,7 +1,7 @@
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '../../../supabase';
 
-export function useFetchStudents() {
+export function useStudents() {
   const { toast } = useToast();
 
   async function fetchStudents(): Promise<{
@@ -30,11 +30,34 @@ export function useFetchStudents() {
     }
   }
 
-  return { fetchStudents };
-}
+  async function fetchStudentById(id: string): Promise<{
+    data?: any;
+    error?: Error | unknown;
+  }> {
+    try {
+      const { data, error } = await supabase
+        .from('students')
+        .select()
+        .eq('id', id);
 
-export function useCreateStudents() {
-  const { toast } = useToast();
+      if (error || !data) {
+        console.log('error:', error);
+        toast({
+          description: 'Erro ao buscar aluno',
+        });
+        return { error };
+      } else {
+        return { data: data[0], error };
+      }
+    } catch (error) {
+      console.log('error:', error);
+      toast({
+        variant: 'destructive',
+        description: 'Erro ao buscar aluno',
+      });
+      return { error };
+    }
+  }
 
   async function createStudents(values: any): Promise<{
     data?: any;
@@ -68,11 +91,41 @@ export function useCreateStudents() {
     }
   }
 
-  return { createStudents };
-}
+  async function upadteStudent(
+    values: any,
+    id: string
+  ): Promise<{
+    data?: any;
+    error?: Error | unknown;
+  }> {
+    try {
+      const { data, error } = await supabase
+        .from('students')
+        .update(values)
+        .eq('id', id)
+        .select();
 
-export function useDeleteStudents() {
-  const { toast } = useToast();
+      if (error || !data) {
+        console.log('error:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Erro ao atualizar aluno',
+          description: error.message,
+        });
+        return { data, error };
+      } else {
+        toast({ description: 'Aluno atualizado com sucesso' });
+        return { data, error };
+      }
+    } catch (error) {
+      console.log('error:', error);
+      toast({
+        variant: 'destructive',
+        description: 'Erro ao atualizar aluno',
+      });
+      return { error };
+    }
+  }
 
   async function deleteStudents(
     ids: string[]
@@ -104,5 +157,11 @@ export function useDeleteStudents() {
     }
   }
 
-  return { deleteStudents };
+  return {
+    fetchStudents,
+    fetchStudentById,
+    createStudents,
+    upadteStudent,
+    deleteStudents,
+  };
 }

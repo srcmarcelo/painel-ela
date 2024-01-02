@@ -56,7 +56,14 @@ export function StudentsTableColumns(
         return (
           <div className='flex space-x-2'>
             <span className='max-w-[500px] truncate font-medium'>
-              {row.getValue('name')}
+              <Link
+                className='w-full h-full underline'
+                href={{
+                  pathname: `/alunos/${row.original.id}`,
+                }}
+              >
+                {row.getValue('name')}
+              </Link>
             </span>
           </div>
         );
