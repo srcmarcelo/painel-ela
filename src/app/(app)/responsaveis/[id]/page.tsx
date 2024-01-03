@@ -20,7 +20,6 @@ export default function Page() {
 
   const fetchData = async () => {
     setLoading(true);
-    console.log('params:', params);
     try {
       const { data, error } = await supabase
         .from('responsibles')

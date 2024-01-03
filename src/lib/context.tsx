@@ -77,7 +77,6 @@ const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    console.log('students:', students);
     loadStudents();
     loadResponsibles();
     loadClasses();
