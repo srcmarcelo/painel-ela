@@ -1,17 +1,19 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { translate } from '@/lib/translate';
 import { Button } from '@/components/ui/button';
 import { ResponsibleForm } from '@/modules/responsibles/form';
 import { useData } from '@/lib/context';
+import Link from 'next/link';
 
 export default function Page() {
   const [edit, setEdit] = useState<boolean>(false);
 
   const { students, responsibles, loading } = useData();
   const params = useParams();
+  const router = useRouter();
 
   const responsible = useMemo(() => {
     return responsibles.find((e) => e.id === params.id);
@@ -34,12 +36,17 @@ export default function Page() {
         <div className='flex flex-col w-full h-full'>
           <div className='flex justify-between items-center max-sm:flex-col max-sm:text-center max-sm:space-y-2'>
             <h1 className='font-medium text-3xl'>{responsible?.name}</h1>
-            <Button
-              onClick={() => setEdit(!edit)}
-              variant={edit ? 'outline' : 'default'}
-            >
-              {edit ? 'Voltar' : 'Editar'}
-            </Button>
+            <div className='flex flex-row space-x-2'>
+              <Button
+                onClick={() => setEdit(!edit)}
+                variant={edit ? 'outline' : 'default'}
+              >
+                {edit ? 'Cancelar' : 'Editar'}
+              </Button>
+              <Button onClick={() => router.back()} variant='outline'>
+                Voltar
+              </Button>
+            </div>
           </div>
           <div className='mt-4'>
             {edit ? (
@@ -82,12 +89,17 @@ export default function Page() {
                     <p className='text-muted-foreground'>Crianças</p>
                     <div className='flex flex-col space-y-1'>
                       {children.map((child, index) => (
-                        <span
+                        <Link
                           key={index}
-                          className='max-w-[500px] truncate font-medium'
+                          className='w-full h-full underline'
+                          href={{
+                            pathname: `/alunos/${child.id}`,
+                          }}
                         >
-                          {child.name}
-                        </span>
+                          <span className='max-w-[500px] truncate'>
+                            {child.name}
+                          </span>
+                        </Link>
                       ))}
                     </div>
                   </div>

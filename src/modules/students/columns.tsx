@@ -89,6 +89,7 @@ export function StudentsTableColumns(
           </div>
         );
       },
+      enableSorting: false,
     },
     {
       accessorKey: 'responsible_id',
@@ -102,12 +103,20 @@ export function StudentsTableColumns(
 
         return (
           <div className='flex space-x-2'>
-            <span className='max-w-[500px] truncate font-medium'>
-              {responsibleName}
-            </span>
+            <Link
+              className='w-full h-full underline'
+              href={{
+                pathname: `/responsaveis/${row.getValue('responsible_id')}`,
+              }}
+            >
+              <span className='max-w-[500px] truncate font-medium'>
+                {responsibleName}
+              </span>
+            </Link>
           </div>
         );
       },
+      enableSorting: false,
     },
     {
       accessorKey: 'date_of_birth',

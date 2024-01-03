@@ -81,6 +81,7 @@ export function ResponsiblesTableColumns(
           </div>
         );
       },
+      enableSorting: false,
     },
     {
       accessorKey: 'phone',
@@ -111,6 +112,7 @@ export function ResponsiblesTableColumns(
           </div>
         );
       },
+      enableSorting: false,
     },
     {
       accessorKey: 'responsible_type',
@@ -143,12 +145,17 @@ export function ResponsiblesTableColumns(
           <div className='flex flex-col space-y-1'>
             {children.length > 0 ? (
               children.map((child, index) => (
-                <span
+                <Link
                   key={index}
-                  className='max-w-[500px] truncate font-medium'
+                  className='w-full h-full underline'
+                  href={{
+                    pathname: `/alunos/${child.id}`,
+                  }}
                 >
-                  {child.name}
-                </span>
+                  <span className='max-w-[500px] truncate font-medium'>
+                    {child.name}
+                  </span>
+                </Link>
               ))
             ) : (
               <span className='max-w-[500px] truncate font-medium'>-</span>
@@ -156,6 +163,7 @@ export function ResponsiblesTableColumns(
           </div>
         );
       },
+      enableSorting: false,
     },
     {
       id: 'actions',
