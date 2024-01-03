@@ -1,6 +1,6 @@
 import { MyForm, Option, formFields } from '@/lib/ts-form';
 import React, { useMemo } from 'react';
-import { z } from 'zod';
+import { object, z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { FileText, Loader } from 'lucide-react';
 import { translate } from '@/lib/translate';
@@ -32,20 +32,16 @@ export function StudentForm({
 
   const { createStudents, upadteStudent } = useStudents();
 
-  const { students, responsibles, classes, loading } = useData();
+  const { students, responsibles, classes, loading, loadStudents } = useData();
 
   const defaultValues = useMemo(() => {
     const student: Student | undefined = students.find(
       (e) => e.id === currentId
     );
 
-    const formatedValues = student
+    const formattedValues: any = student
       ? {
-          name: student.name,
-          mother: student.mother_id,
-          father: student.father_id,
-          responsible: student.responsible_id,
-          classroom: student.class_id,
+          ...student,
           date_of_birth: format(
             parseISODateWithOffset(student.date_of_birth as unknown as string),
             'dd/MM/yyyy',
@@ -56,7 +52,13 @@ export function StudentForm({
         }
       : {};
 
-    return formatedValues;
+    Object.keys(formattedValues).forEach((key: any) => {
+      if (formattedValues[key] === null) {
+        delete formattedValues[key];
+      }
+    });
+
+    return formattedValues;
   }, [currentId, students]);
 
   const onSubmit = async (values: z.infer<typeof StudentSchema>) => {
@@ -66,16 +68,23 @@ export function StudentForm({
       new Date()
     );
 
-    const formattedValues = {
+    const formattedValues: { [key: string]: string | Date | null } = {
       ...values,
       date_of_birth: parsedDateOfBirth,
     };
+
+    Object.keys(formattedValues).forEach((key: any) => {
+      if (formattedValues[key] === null) {
+        delete formattedValues[key];
+      }
+    });
 
     const { error } = currentId
       ? await upadteStudent(formattedValues, currentId)
       : await createStudents(formattedValues);
 
     if (!error) {
+      loadStudents();
       router.push('/alunos');
     }
   };
@@ -137,12 +146,12 @@ export function StudentForm({
       }) => {
         return (
           <div className='space-y-8 py-4 w-full mb-4'>
-            <div className='grid grid-cols-3 gap-3 w-full'>
+            <div className='grid grid-cols-3 gap-3 w-full max-md:grid-cols-1'>
               <div>{name}</div>
               <div>{date_of_birth}</div>
               <div>{class_id}</div>
             </div>
-            <div className='grid grid-cols-3 gap-3 w-full'>
+            <div className='grid grid-cols-3 gap-3 w-full max-md:grid-cols-1'>
               <div>{mother_id}</div>
               <div>{father_id}</div>
               <div>{responsible_id}</div>

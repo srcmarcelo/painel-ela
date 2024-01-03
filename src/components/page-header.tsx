@@ -15,7 +15,7 @@ export function PageHeader(props: PageHeaderProps) {
   return (
     <div
       className={cn(
-        'w-full flex flex-row justify-between items-center mb-10 gap-2',
+        'w-full flex flex-row justify-between items-center mb-10 gap-2 max-sm:flex-col max-sm:text-center',
         className
       )}
     >

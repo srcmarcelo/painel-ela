@@ -18,8 +18,8 @@ const NavbarItem = ({ href, label }: { href: string; label: string }) => {
 
 export function Navbar() {
   return (
-    <header className='w-full py-4 bg-primary text-white text-lg'>
-      <ul className='flex justify-center items-center space-x-10'>
+    <header className='w-full py-4 bg-primary text-white text-lg max-sm:text-base'>
+      <ul className='flex justify-center items-center space-x-10 max-sm:space-x-4'>
         <NavbarItem href='/' label='Painel' />
         <NavbarItem href='/alunos' label='Alunos' />
         <NavbarItem href='/responsaveis' label='Responsáveis' />

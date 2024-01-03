@@ -59,13 +59,28 @@ export function ResponsibleForm({
   }, []);
 
   const defaultValues = useMemo(() => {
-    return responsible || {};
+    const formattedValues = responsible || {};
+
+    Object.keys(formattedValues).forEach((key: any) => {
+      if (formattedValues[key] === null) {
+        delete formattedValues[key];
+      }
+    });
+    return formattedValues;
   }, [responsible]);
 
   const onSubmit = async (values: z.infer<typeof ResponsibleSchema>) => {
+    const formattedValues: any = values || {};
+
+    Object.keys(formattedValues).forEach((key: any) => {
+      if (formattedValues[key] === null) {
+        delete formattedValues[key];
+      }
+    });
+  
     const { error } = currentId
-      ? await upadteResponsible(values, currentId)
-      : await createResponsibles(values);
+      ? await upadteResponsible(formattedValues, currentId)
+      : await createResponsibles(formattedValues);
 
     if (!error) {
       router.push('/responsaveis');
@@ -114,11 +129,11 @@ export function ResponsibleForm({
       {({ name, cpf, phone, email, responsible_type, children }) => {
         return (
           <div className='space-y-8 py-4 w-full mb-4'>
-            <div className='grid grid-cols-2 gap-3 w-full'>
+            <div className='grid grid-cols-2 gap-3 w-full max-md:grid-cols-1'>
               <div>{name}</div>
               <div>{email}</div>
             </div>
-            <div className='grid grid-cols-3 gap-3 w-full'>
+            <div className='grid grid-cols-3 gap-3 w-full max-md:grid-cols-1'>
               <div>{cpf}</div>
               <div>{phone}</div>
               <div>{responsible_type}</div>
