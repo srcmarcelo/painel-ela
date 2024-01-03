@@ -7,9 +7,10 @@ export const studentSchema = z.object({
   code: z.number(),
   name: z.string(),
   date_of_birth: z.date(),
-  class: z.string(),
-  father: z.string(),
-  mother: z.string(),
+  class_id: z.string(),
+  responsible_id: z.string(),
+  mother_id: z.string(),
+  father_id: z.string()
 })
 
 export type Student = z.infer<typeof studentSchema>

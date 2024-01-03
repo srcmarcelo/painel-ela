@@ -1,23 +1,23 @@
 import { MyForm, Option, formFields } from '@/lib/ts-form';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { FileText, Loader } from 'lucide-react';
 import { translate } from '@/lib/translate';
 import { useRouter } from 'next/navigation';
 import { useStudents } from './api';
-import { useClasses } from '../classes/api';
-import { useResponsibles } from '../responsibles/api';
 import { format, parse } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { parseISODateWithOffset } from '@/lib/utils';
+import { useData } from '@/lib/context';
+import { Student } from './schema';
 
 const StudentSchema = z.object({
   name: formFields.text.describe('Nome'),
-  mother: formFields.select_option.describe('Mãe').optional(),
-  father: formFields.select_option.describe('Pai').optional(),
-  responsible: formFields.select_option.describe('Responsável').optional(),
-  classroom: formFields.select_option.describe('Turma').optional(),
+  mother_id: formFields.select_option.describe('Mãe').optional(),
+  father_id: formFields.select_option.describe('Pai').optional(),
+  responsible_id: formFields.select_option.describe('Responsável').optional(),
+  class_id: formFields.select_option.describe('Turma').optional(),
   date_of_birth: formFields.date_input.describe('Data de nascimento'),
 });
 
@@ -30,43 +30,15 @@ export function StudentForm({
 }) {
   const router = useRouter();
 
-  const { createStudents, fetchStudentById, upadteStudent } = useStudents();
-  const { fetchClasses } = useClasses();
-  const { fetchResponsibles } = useResponsibles();
+  const { createStudents, upadteStudent } = useStudents();
 
-  const [classes, setClasses] = useState<any[]>([]);
-  const [responsibles, setResponsibles] = useState<any[]>([]);
-  const [student, setStudent] = useState<any>();
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const { data: classesData, error: classesError } = await fetchClasses();
-        const { data: responsibleData, error: responsiblesError } =
-          await fetchResponsibles();
-        if (currentId) {
-          const { data: studentData } = await fetchStudentById(currentId);
-          setStudent(studentData);
-        }
-
-        if (classesError || responsiblesError)
-          throw { classesError, responsiblesError };
-
-        setClasses(classesData);
-        setResponsibles(responsibleData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-      setLoading(false);
-    };
-
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { students, responsibles, classes, loading } = useData();
 
   const defaultValues = useMemo(() => {
+    const student: Student | undefined = students.find(
+      (e) => e.id === currentId
+    );
+
     const formatedValues = student
       ? {
           name: student.name,
@@ -75,7 +47,7 @@ export function StudentForm({
           responsible: student.responsible_id,
           classroom: student.class_id,
           date_of_birth: format(
-            parseISODateWithOffset(student.date_of_birth),
+            parseISODateWithOffset(student.date_of_birth as unknown as string),
             'dd/MM/yyyy',
             {
               locale: ptBR,
@@ -85,7 +57,7 @@ export function StudentForm({
       : {};
 
     return formatedValues;
-  }, [student]);
+  }, [currentId, students]);
 
   const onSubmit = async (values: z.infer<typeof StudentSchema>) => {
     const parsedDateOfBirth = parse(
@@ -95,12 +67,8 @@ export function StudentForm({
     );
 
     const formattedValues = {
-      name: values.name,
+      ...values,
       date_of_birth: parsedDateOfBirth,
-      responsible_id: values.responsible,
-      mother_id: values.mother,
-      father_id: values.father,
-      class_id: values.classroom,
     };
 
     const { error } = currentId
@@ -143,34 +111,41 @@ export function StudentForm({
       )}
       schema={StudentSchema}
       props={{
-        classroom: {
+        class_id: {
           options: classesData,
         } as any,
-        mother: {
+        mother_id: {
           options: responsiblesData,
         } as any,
-        father: {
+        father_id: {
           options: responsiblesData,
         } as any,
-        responsible: {
+        responsible_id: {
           options: responsiblesData,
         } as any,
       }}
       defaultValues={defaultValues as any}
       onSubmit={onSubmit}
     >
-      {({ name, classroom, mother, father, responsible, date_of_birth }) => {
+      {({
+        name,
+        class_id,
+        mother_id,
+        father_id,
+        responsible_id,
+        date_of_birth,
+      }) => {
         return (
           <div className='space-y-8 py-4 w-full mb-4'>
             <div className='grid grid-cols-3 gap-3 w-full'>
               <div>{name}</div>
               <div>{date_of_birth}</div>
-              <div>{classroom}</div>
+              <div>{class_id}</div>
             </div>
             <div className='grid grid-cols-3 gap-3 w-full'>
-              <div>{mother}</div>
-              <div>{father}</div>
-              <div>{responsible}</div>
+              <div>{mother_id}</div>
+              <div>{father_id}</div>
+              <div>{responsible_id}</div>
             </div>
           </div>
         );

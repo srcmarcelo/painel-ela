@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/navbar';
 import { Toaster } from '@/components/ui/toaster';
+import { cn } from '@/lib/utils';
+import { DataProvider } from '@/lib/context';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,10 +20,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang='pt-br'>
-      <body className={inter.className}>
-        <Navbar />
-        <div>{children}</div>
-        <Toaster />
+      <body
+        className={cn(
+          'min-h-screen overflow-hidden bg-background',
+          inter.className
+        )}
+      >
+        <DataProvider>
+          <div className='overflow-auto h-screen'>
+            <Navbar />
+            <main>{children}</main>
+          </div>
+          <Toaster />
+        </DataProvider>
       </body>
     </html>
   );

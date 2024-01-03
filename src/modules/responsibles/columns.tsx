@@ -7,14 +7,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { DataTableColumnHeader } from '@/components/DataTable/data-table-column-header';
 import { DataTableRowActions } from '@/components/DataTable/data-table-row-actions';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
-import { Student } from './schema';
 import { translate } from '@/lib/translate';
 import Link from 'next/link';
+import { Responsible } from './schema';
 
 export function ResponsiblesTableColumns(
   students: { id: string; name: string }[],
   onDelete: (ids: string[]) => void
-): ColumnDef<Student>[] {
+): ColumnDef<Responsible>[] {
   return [
     {
       id: 'select',

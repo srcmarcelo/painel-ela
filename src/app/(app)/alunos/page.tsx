@@ -2,53 +2,22 @@
 
 import DataTable from '@/components/DataTable/data-table';
 import { StudentsTableColumns } from '@/modules/students/columns';
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { supabase } from '../../../../supabase';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useRouter } from 'next/navigation';
 import { useStudents } from '@/modules/students/api';
+import { useData } from '@/lib/context';
 
 export default function Page() {
   const router = useRouter();
-
-  const [data, setData] = useState<any[]>([]);
-  const [responsibles, setResponsibles] = useState<any[]>([]);
-  const [classes, setClasses] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { students, responsibles, classes, loading, loadStudents } = useData();
 
   const { deleteStudents } = useStudents();
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.from('students').select('*');
-      const { data: responsiblesData, error: responsiblesError } =
-        await supabase.from('responsibles').select('*');
-      const { data: classesData, error: classesError } = await supabase
-        .from('classes')
-        .select('*');
-      if (error || responsiblesError || classesError)
-        throw { error, responsiblesError, classesError };
-
-      setData(data);
-      setResponsibles(responsiblesData);
-      setClasses(classesData);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const onDelete = async (ids: string[]) => {
     await deleteStudents(ids);
-    fetchData();
+    loadStudents();
   };
 
   return (
@@ -64,7 +33,7 @@ export default function Page() {
         </Button>
       </PageHeader>
       <DataTable
-        data={data || []}
+        data={students || []}
         columns={StudentsTableColumns(responsibles, classes, onDelete)}
         body={!loading && <DataTable.Body />}
         toolbar={
