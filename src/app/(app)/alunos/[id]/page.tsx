@@ -1,87 +1,56 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { supabase } from '../../../../../supabase';
+import React, { useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { translate } from '@/lib/translate';
 import { Button } from '@/components/ui/button';
 import { StudentForm } from '@/modules/students/form';
+import { useData } from '@/lib/context';
 
 export default function Page() {
-  const [student, setStudent] = useState<any>();
-  const [mother, setMother] = useState<any>();
-  const [father, setFather] = useState<any>();
-  const [responsible, setResponsible] = useState<any>();
-  const [classroom, setClassroom] = useState<any>();
-  const [loading, setLoading] = useState<boolean>(true);
   const [edit, setEdit] = useState<boolean>(false);
+
+  const { students, responsibles, classes, loading } = useData();
 
   const params = useParams();
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('students')
-        .select('*')
-        .eq('id', params?.id);
+  const student = useMemo(() => {
+    return students.find((e) => e.id === params.id);
+  }, [params.id, students]);
 
-      if (data?.[0].mother_id) {
-        const { data: mothersData, error: mothersError } = await supabase
-          .from('responsibles')
-          .select('*')
-          .eq('id', data?.[0].mother_id || '');
-        setMother(mothersData?.[0]);
-      }
+  const mother = useMemo(() => {
+    return student
+      ? responsibles.find((e) => e.id === student.mother_id)
+      : undefined;
+  }, [responsibles, student]);
 
-      if (data?.[0].father_id) {
-        const { data: fathersData, error: fathersError } = await supabase
-          .from('responsibles')
-          .select('*')
-          .eq('id', data?.[0].father_id);
-        setFather(fathersData?.[0]);
-      }
+  const father = useMemo(() => {
+    return student
+      ? responsibles.find((e) => e.id === student.father_id)
+      : undefined;
+  }, [responsibles, student]);
 
-      if (data?.[0].responsible_id) {
-        const { data: responsiblesData, error: responsiblesError } =
-          await supabase
-            .from('responsibles')
-            .select('*')
-            .eq('id', data?.[0].responsible_id);
-        setResponsible(responsiblesData?.[0]);
-      }
+  const responsible = useMemo(() => {
+    return student
+      ? responsibles.find((e) => e.id === student.responsible_id)
+      : undefined;
+  }, [responsibles, student]);
 
-      if (data?.[0].class_id) {
-        const { data: classesData, error: classesError } = await supabase
-          .from('classes')
-          .select('*')
-          .eq('id', data?.[0].class_id);
-        setClassroom(classesData?.[0]);
-      }
-
-      if (error) throw error;
-
-      setStudent(data?.[0]);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const classroom = useMemo(() => {
+    return student
+      ? classes.find((e) => e.id === student.class_id)
+      : undefined;
+  }, [classes, student]);
 
   return (
-    <main className='py-6 px-12'>
+    <div className='py-6 px-12'>
       {loading ? (
         <div className='flex flex-col flex-1 w-full h-full justify-center items-center text-center'>
           Carregando...
         </div>
       ) : (
         <div className='flex flex-col w-full h-full'>
-          <div className='flex justify-between items-center'>
+          <div className='flex justify-between items-center max-sm:flex-col max-sm:text-center max-sm:space-y-2'>
             <h1 className='font-medium text-3xl'>{student?.name}</h1>
             <Button
               onClick={() => setEdit(!edit)}
@@ -92,7 +61,10 @@ export default function Page() {
           </div>
           <div className='mt-4'>
             {edit ? (
-              <StudentForm onSubmit={() => setEdit(false)} currentId={student?.id} />
+              <StudentForm
+                onSubmit={() => setEdit(false)}
+                currentId={student?.id}
+              />
             ) : (
               <div className='border rounded-md p-4 space-y-4'>
                 {classroom && (
@@ -126,6 +98,6 @@ export default function Page() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }

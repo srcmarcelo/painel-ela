@@ -1,64 +1,38 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { supabase } from '../../../../../supabase';
+import React, { useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { translate } from '@/lib/translate';
-import { useStudents } from '@/modules/students/api';
 import { Button } from '@/components/ui/button';
 import { ResponsibleForm } from '@/modules/responsibles/form';
+import { useData } from '@/lib/context';
 
 export default function Page() {
-  const { fetchStudents } = useStudents();
-
-  const [responsible, setResponsible] = useState<any>();
-  const [students, setStudents] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [edit, setEdit] = useState<boolean>(false);
 
+  const { students, responsibles, loading } = useData();
   const params = useParams();
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('responsibles')
-        .select('*')
-        .eq('id', params?.id);
-
-      if (data?.[0].children?.length > 0) {
-        const { data } = await fetchStudents();
-        setStudents(data);
-      }
-
-      if (error) throw error;
-
-      setResponsible(data?.[0]);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-    setLoading(false);
-  };
+  const responsible = useMemo(() => {
+    return responsibles.find((e) => e.id === params.id);
+  }, [params.id, responsibles]);
 
   const children = useMemo(() => {
-    const childrenIds: string[] = responsible?.children;
-    return students.filter((student) => childrenIds.includes(student.id));
+    const childrenIds: string[] | undefined = responsible?.children;
+    return childrenIds?.length && childrenIds?.length > 0
+      ? students.filter((student) => childrenIds?.includes(student.id))
+      : [];
   }, [responsible?.children, students]);
 
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
-    <main className='py-6 px-12'>
+    <div className='py-6 px-12'>
       {loading ? (
         <div className='flex flex-col flex-1 w-full h-full justify-center items-center text-center'>
           Carregando...
         </div>
       ) : (
         <div className='flex flex-col w-full h-full'>
-          <div className='flex justify-between items-center'>
+          <div className='flex justify-between items-center max-sm:flex-col max-sm:text-center max-sm:space-y-2'>
             <h1 className='font-medium text-3xl'>{responsible?.name}</h1>
             <Button
               onClick={() => setEdit(!edit)}
@@ -76,9 +50,13 @@ export default function Page() {
             ) : (
               <div className='border rounded-md p-4 space-y-4'>
                 <div>
-                  <p className='text-muted-foreground'>Email</p>
+                  <p className='text-muted-foreground'>Tipo</p>
                   <p>
-                    {translate.responsible_types[responsible?.responsible_type]}
+                    {responsible
+                      ? translate.responsible_types[
+                          responsible?.responsible_type
+                        ]
+                      : '-'}
                   </p>
                 </div>
                 {responsible?.cpf && (
@@ -119,6 +97,6 @@ export default function Page() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }

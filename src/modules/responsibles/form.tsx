@@ -1,11 +1,11 @@
 import { MyForm, Option, formFields } from '@/lib/ts-form';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { FileText, Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useResponsibles } from './api';
-import { useStudents } from '../students/api';
+import { useData } from '@/lib/context';
 
 const ResponsibleSchema = z.object({
   name: formFields.text.describe('Nome'),
@@ -24,50 +24,22 @@ export function ResponsibleForm({
   onSubmit?: (values: any) => void;
 }) {
   const router = useRouter();
-  const { createResponsibles, fetchResponsibleById, upadteResponsible } =
-    useResponsibles();
-  const { fetchStudents } = useStudents();
-
-  const [students, setStudents] = useState<any[]>([]);
-  const [responsible, setResponsible] = useState<any>();
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const { data: studentsData, error: studentsError } =
-          await fetchStudents();
-        if (currentId) {
-          const { data: responsibleData } = await fetchResponsibleById(
-            currentId
-          );
-          setResponsible(responsibleData);
-        }
-
-        if (studentsError) throw studentsError;
-
-        setStudents(studentsData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-      setLoading(false);
-    };
-
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { createResponsibles, upadteResponsible } = useResponsibles();
+  const { students, responsibles, loading, loadResponsibles } = useData();
 
   const defaultValues = useMemo(() => {
-    const formattedValues = responsible || {};
+    const formattedValues: any = currentId
+      ? responsibles.find((e) => e.id === currentId)
+      : {};
 
     Object.keys(formattedValues).forEach((key: any) => {
       if (formattedValues[key] === null) {
         delete formattedValues[key];
       }
     });
+
     return formattedValues;
-  }, [responsible]);
+  }, [currentId, responsibles]);
 
   const onSubmit = async (values: z.infer<typeof ResponsibleSchema>) => {
     const formattedValues: any = values || {};
@@ -77,12 +49,13 @@ export function ResponsibleForm({
         delete formattedValues[key];
       }
     });
-  
+
     const { error } = currentId
       ? await upadteResponsible(formattedValues, currentId)
       : await createResponsibles(formattedValues);
 
     if (!error) {
+      loadResponsibles();
       router.push('/responsaveis');
     }
   };
