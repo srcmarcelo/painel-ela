@@ -27,7 +27,7 @@ export default function RootLayout({
         )}
       >
         <DataProvider>
-          <div className='overflow-auto h-screen'>
+          <div className='overflow-auto h-screen pb-10'>
             <Navbar />
             <main>{children}</main>
           </div>
