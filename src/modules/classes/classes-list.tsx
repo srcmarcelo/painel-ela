@@ -18,7 +18,7 @@ export function ClassesList() {
     </div>
   ) : (
     <div className='flex flex-wrap justify-center items-center w-full'>
-      {classes.map((classroom, index) => {
+      {classes?.map((classroom, index) => {
         const classStudents: any[] = students.filter(
           (student: any) => student.class_id === classroom.id
         );

@@ -39,7 +39,7 @@ export default function Page() {
   }, [responsibles, student]);
 
   const classroom = useMemo(() => {
-    return student ? classes.find((e) => e.id === student.class_id) : undefined;
+    return student ? classes?.find((e) => e.id === student.class_id) : undefined;
   }, [classes, student]);
 
   return (

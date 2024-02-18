@@ -75,7 +75,7 @@ export function StudentsTableColumns(
         <DataTableColumnHeader column={column} title='Turma' />
       ),
       cell: ({ row }) => {
-        const classroom = classes.find(
+        const classroom = classes?.find(
           (e) => e.id === row.getValue('class_id')
         );
 
