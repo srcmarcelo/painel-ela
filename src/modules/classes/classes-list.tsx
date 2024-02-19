@@ -1,16 +1,29 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useClasses } from './api';
+import React, { useMemo } from 'react';
 import { Loader } from 'lucide-react';
-import { useStudents } from '../students/api';
 import { translate } from '@/lib/translate';
 import DataTable from '@/components/DataTable/data-table';
 import { ClassStudentsTableColumns } from './columns';
-import { useData } from '@/lib/context';
+import useSupabaseBrowser from '@/utils/supabase-browser';
+import { useQuery } from '@supabase-cache-helpers/postgrest-react-query';
+import { getClasses } from '@/queries/getClasses';
+import { getStudents } from '@/queries/getStudents';
 
 export function ClassesList() {
-  const { classes, students, loading } = useData();
+  const supabase = useSupabaseBrowser();
+  const { data: classes, isLoading: loadingClasses } = useQuery(
+    getClasses(supabase),
+    { refetchOnWindowFocus: false, refetchOnMount: false }
+  );
+  const { data: students, isLoading: loadingStudents } = useQuery(
+    getStudents(supabase)
+  );
+
+  const loading = useMemo(
+    () => loadingClasses || loadingStudents,
+    [loadingClasses, loadingStudents]
+  );
 
   return loading ? (
     <div className='flex flex-1 justify-center items-center'>
@@ -19,8 +32,8 @@ export function ClassesList() {
   ) : (
     <div className='flex flex-wrap justify-center items-center w-full'>
       {classes?.map((classroom, index) => {
-        const classStudents: any[] = students.filter(
-          (student: any) => student.class_id === classroom.id
+        const classStudents: any[] | undefined = students?.filter(
+          (student) => student.class_id === classroom.id
         );
 
         return (
