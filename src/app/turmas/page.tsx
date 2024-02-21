@@ -1,4 +1,4 @@
-import { ClassesList } from "@/modules/classes/classes-list";
+import { ClassesList } from "@/modules/classes/components/classes-list";
 
 export default function Page() {
   return (

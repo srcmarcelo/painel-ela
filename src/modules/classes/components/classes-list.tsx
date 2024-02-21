@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 import { Loader } from 'lucide-react';
 import { translate } from '@/lib/translate';
 import DataTable from '@/components/DataTable/data-table';
-import { ClassStudentsTableColumns } from './columns';
+import { ClassStudentsTableColumns } from '../columns';
 import useSupabaseBrowser from '@/utils/supabase-browser';
 import { useQuery } from '@supabase-cache-helpers/postgrest-react-query';
 import { getClasses } from '@/queries/getClasses';
