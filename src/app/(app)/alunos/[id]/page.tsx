@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { StudentForm } from '@/modules/students/form';
 import { useData } from '@/lib/context';
 import Link from 'next/link';
+import StudentsScores from '@/modules/scores/studentScores';
 
 export default function Page() {
   const [edit, setEdit] = useState<boolean>(false);
@@ -39,7 +40,9 @@ export default function Page() {
   }, [responsibles, student]);
 
   const classroom = useMemo(() => {
-    return student ? classes?.find((e) => e.id === student.class_id) : undefined;
+    return student
+      ? classes?.find((e) => e.id === student.class_id)
+      : undefined;
   }, [classes, student]);
 
   return (
@@ -64,6 +67,7 @@ export default function Page() {
               </Button>
             </div>
           </div>
+
           <div className='mt-4'>
             {edit ? (
               <StudentForm
@@ -121,6 +125,13 @@ export default function Page() {
                 )}
               </div>
             )}
+          </div>
+
+          <div className='mt-8'>
+            <StudentsScores
+              studentId={student?.id}
+              classId={student?.class_id}
+            />
           </div>
         </div>
       )}
