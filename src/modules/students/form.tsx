@@ -26,7 +26,7 @@ export function StudentForm({
   onSubmit: _onSubmit,
 }: {
   currentId?: string;
-  onSubmit?: (values: any) => void;
+  onSubmit?: () => void;
 }) {
   const router = useRouter();
 
@@ -85,7 +85,7 @@ export function StudentForm({
 
     if (!error) {
       loadStudents();
-      router.push('/alunos');
+      _onSubmit?.();
     }
   };
 
@@ -97,13 +97,22 @@ export function StudentForm({
       };
     }) || [];
 
-  const responsiblesData: Option[] =
+  const responsiblesData: Option[] = (
     responsibles?.map((responsible): Option => {
       return {
-        label: responsible.name,
+        label: responsible.name.toUpperCase(),
         value: responsible.id,
       };
-    }) || [];
+    }) || []
+  ).sort((a, b) => {
+    if (a.label < b.label) {
+      return -1;
+    }
+    if (a.label > b.label) {
+      return 1;
+    }
+    return 0;
+  });
 
   return loading ? (
     <div className='flex flex-1 justify-center items-center'>

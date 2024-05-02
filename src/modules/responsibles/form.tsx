@@ -60,13 +60,22 @@ export function ResponsibleForm({
     }
   };
 
-  const studentsData: Option[] =
+  const studentsData: Option[] = (
     students?.map((student): Option => {
       return {
-        label: student.name,
+        label: student.name.toUpperCase(),
         value: student.id,
       };
-    }) || [];
+    }) || []
+  ).sort((a, b) => {
+    if (a.label < b.label) {
+      return -1;
+    }
+    if (a.label > b.label) {
+      return 1;
+    }
+    return 0;
+  });
 
   const responsibleTypes: Option[] = [
     { label: 'Mãe', value: 'mother' },

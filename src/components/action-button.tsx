@@ -11,7 +11,7 @@ export default function ActionButton({
 }) {
   return (
     <div
-      className='w-full border rounded-xl h-20 flex justify-between items-center px-8 hover:border-primary hover:text-primary'
+      className='w-full cursor-pointer border rounded-xl h-20 flex justify-between items-center px-8 hover:border-primary hover:text-primary'
       onClick={onClick}
     >
       <p>{content}</p>

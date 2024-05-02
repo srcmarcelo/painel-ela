@@ -39,7 +39,7 @@ export function ClassesList() {
         return (
           <div
             key={index}
-            className='flex flex-col w-72 h-72 p-2 rounded-sm m-2'
+            className='flex flex-col w-96 h-72 p-2 rounded-sm m-2'
           >
             <h1>
               {classroom?.grade} - {translate.period[classroom.period]}

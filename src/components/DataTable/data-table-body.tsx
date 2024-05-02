@@ -16,7 +16,7 @@ export function DataTableBody() {
   const { table, columns } = useDataTableContext();
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border p-2">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

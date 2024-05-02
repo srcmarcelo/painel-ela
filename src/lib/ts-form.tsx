@@ -43,6 +43,7 @@ import { Badge } from '@/components/ui/badge';
 import { XIcon } from 'lucide-react';
 import { BRL_CPF, BRL_PHONE, BR_DATE, maskToCurrency } from './masks';
 import ptBR from 'date-fns/locale/pt-BR';
+import { Switch } from '@/components/ui/switch';
 
 export type Option = {
   value: string;
@@ -184,6 +185,18 @@ function SelectField({ options }: { options: string[] }) {
         </SelectContent>
       </Select>
       <span className='text-destructive'>{error?.errorMessage}</span>
+    </div>
+  );
+}
+
+function SwitchField() {
+  const { field, error, fieldState } = useTsController<boolean>();
+  const { label } = useDescription();
+
+  return (
+    <div className='space-x-2 flex justify-center items-center'>
+      <span>{label}</span>
+      <Switch checked={field.value} onCheckedChange={field.onChange} />
     </div>
   );
 }
@@ -558,6 +571,10 @@ export const formFields = {
     z.string({ required_error: 'Campo obrigatório' }),
     'date_input'
   ),
+  switch: createUniqueFieldSchema(
+    z.boolean({ required_error: 'Campo obrigatório' }),
+    'switch'
+  ),
 };
 
 const mapping = [
@@ -573,6 +590,7 @@ const mapping = [
   [formFields.card_radio_group, CardRadioButtonField] as const,
   [formFields.date_picker, DatePickerField] as const,
   [formFields.date_input, DateInputField] as const,
+  [formFields.switch, SwitchField] as const,
 ] as const;
 
 function FormContainer({
