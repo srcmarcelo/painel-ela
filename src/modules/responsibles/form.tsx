@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { FileText, Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useResponsibles } from './api';
-import { useData } from '@/lib/context';
+import { useData } from '@/lib/data/context';
 
 const ResponsibleSchema = z.object({
   name: formFields.text.describe('Nome'),

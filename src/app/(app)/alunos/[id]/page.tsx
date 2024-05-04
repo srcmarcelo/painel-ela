@@ -5,9 +5,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { translate } from '@/lib/translate';
 import { Button } from '@/components/ui/button';
 import { StudentForm } from '@/modules/students/form';
-import { useData } from '@/lib/context';
+import { useData } from '@/lib/data/context';
 import Link from 'next/link';
 import StudentsScores from '@/modules/scores/studentScores';
+import Loader from '@/components/loader';
 
 export default function Page() {
   const [edit, setEdit] = useState<boolean>(false);
@@ -48,9 +49,7 @@ export default function Page() {
   return (
     <div className='py-6 px-12'>
       {loading ? (
-        <div className='flex flex-col flex-1 w-full h-full justify-center items-center text-center'>
-          Carregando...
-        </div>
+        <Loader />
       ) : (
         <div className='flex flex-col w-full h-full'>
           <div className='flex justify-between items-center max-sm:flex-col max-sm:text-center max-sm:space-y-2'>

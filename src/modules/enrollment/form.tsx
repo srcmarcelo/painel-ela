@@ -8,7 +8,7 @@ import { FileText, Loader } from 'lucide-react';
 import { translate } from '@/lib/translate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { parse } from 'date-fns';
-import { useData } from '@/lib/context';
+import { useData } from '@/lib/data/context';
 import { PageHeader } from '@/components/page-header';
 import { useForm } from 'react-hook-form';
 import { useStudents } from '../students/api';
@@ -209,7 +209,7 @@ export function EnrollmentForm({
         const hasResponsible = EnrollmentFormRef.watch().responsible_registered;
 
         return (
-          <div className='space-y-8 w-full mb-4'>
+          <div className='space-y-8 py-4 w-full mb-4'>
             <PageHeader
               title='Aluno'
               subtitle='Dados do aluno'

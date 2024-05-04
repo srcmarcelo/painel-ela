@@ -1,11 +1,9 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { Navbar } from '@/components/navbar';
-import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
-import { DataProvider } from '@/lib/context';
 import { ReactQueryClientProvider } from '@/components/react-query-client-provider';
+import { AuthProvider } from '@/lib/auth/context';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,13 +26,7 @@ export default function RootLayout({
             inter.className
           )}
         >
-          <DataProvider>
-            <div className='overflow-auto h-screen pb-10'>
-              <Navbar />
-              <main>{children}</main>
-            </div>
-            <Toaster />
-          </DataProvider>
+          <AuthProvider>{children}</AuthProvider>
         </body>
       </html>
     </ReactQueryClientProvider>

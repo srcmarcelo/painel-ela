@@ -1,7 +1,7 @@
 'use client';
 
 import StatisticCard from '@/components/statistic-card';
-import { useData } from '@/lib/context';
+import { useData } from '@/lib/data/context';
 import { cn } from '@/lib/utils';
 import React from 'react';
 import { ClassNameValue } from 'tailwind-merge';

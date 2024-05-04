@@ -9,7 +9,7 @@ import { useStudents } from './api';
 import { format, parse } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { parseISODateWithOffset } from '@/lib/utils';
-import { useData } from '@/lib/context';
+import { useData } from '@/lib/data/context';
 import { Student } from './schema';
 
 const StudentSchema = z.object({

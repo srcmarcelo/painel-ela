@@ -7,7 +7,8 @@ import { PlusIcon } from '@radix-ui/react-icons';
 import { useRouter } from 'next/navigation';
 import { ResponsiblesTableColumns } from '@/modules/responsibles/columns';
 import { useResponsibles } from '@/modules/responsibles/api';
-import { useData } from '@/lib/context';
+import { useData } from '@/lib/data/context';
+import Loader from '@/components/loader';
 
 export default function Page() {
   const router = useRouter();
@@ -52,11 +53,7 @@ export default function Page() {
         }
         pagination={<DataTable.Pagination />}
         loadingComponent={() => {
-          return loading ? (
-            <div className='flex flex-1 justify-center items-center animate-pulse'>
-              Carregando...
-            </div>
-          ) : null;
+          return loading ? <Loader /> : null;
         }}
       />
     </div>

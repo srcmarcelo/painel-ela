@@ -1,29 +1,14 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Loader } from 'lucide-react';
 import { translate } from '@/lib/translate';
 import DataTable from '@/components/DataTable/data-table';
 import { ClassStudentsTableColumns } from '../columns';
-import useSupabaseBrowser from '@/utils/supabase-browser';
-import { useQuery } from '@supabase-cache-helpers/postgrest-react-query';
-import { getClasses } from '@/queries/getClasses';
-import { getStudents } from '@/queries/getStudents';
+import { useData } from '@/lib/data/context';
 
 export function ClassesList() {
-  const supabase = useSupabaseBrowser();
-  const { data: classes, isLoading: loadingClasses } = useQuery(
-    getClasses(supabase),
-    { refetchOnWindowFocus: false, refetchOnMount: false }
-  );
-  const { data: students, isLoading: loadingStudents } = useQuery(
-    getStudents(supabase)
-  );
-
-  const loading = useMemo(
-    () => loadingClasses || loadingStudents,
-    [loadingClasses, loadingStudents]
-  );
+  const { students, classes, loading } = useData();
 
   return loading ? (
     <div className='flex flex-1 justify-center items-center'>
@@ -48,7 +33,7 @@ export function ClassesList() {
               data={classStudents || []}
               columns={ClassStudentsTableColumns()}
               body={!loading && <DataTable.Body />}
-              className='h-full overflow-auto'
+              className='h-full overflow-auto max-w-xs'
             />
           </div>
         );
