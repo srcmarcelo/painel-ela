@@ -1,13 +1,13 @@
 'use client';
 
+import React from 'react';
 import StatisticCard from '@/components/statistic-card';
 import { useData } from '@/lib/data/context';
 import { cn } from '@/lib/utils';
-import React from 'react';
 import { ClassNameValue } from 'tailwind-merge';
 
 export default function Cards({ classname }: { classname: ClassNameValue }) {
-  const { students, responsibles, loading } = useData();
+  const { students, responsibles, loading, staff } = useData();
 
   return (
     <div
@@ -93,7 +93,7 @@ export default function Cards({ classname }: { classname: ClassNameValue }) {
         content={
           <>
             <div className={cn('font-bold', loading ? 'text-lg' : 'text-2xl')}>
-              {loading ? 'carregando...' : 0}
+              {loading ? 'carregando...' : staff.length}
             </div>
             <p className='text-xs text-muted-foreground'>cadastrados</p>
           </>

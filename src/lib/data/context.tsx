@@ -4,6 +4,8 @@ import { useClasses } from '@/modules/classes/api';
 import { Class } from '@/modules/classes/schema';
 import { useResponsibles } from '@/modules/responsibles/api';
 import { Responsible } from '@/modules/responsibles/schema';
+import { useStaff } from '@/modules/staff/api';
+import { User } from '@/modules/staff/schema';
 import { useStudents } from '@/modules/students/api';
 import { Student } from '@/modules/students/schema';
 import React, {
@@ -18,6 +20,7 @@ interface DataContextProps {
   students: Student[];
   responsibles: Responsible[];
   classes: Class[];
+  staff: User[];
   loading: boolean;
   loadStudents: () => void;
   loadResponsibles: () => void;
@@ -34,11 +37,13 @@ const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
   const [students, setStudents] = useState<Student[]>([]);
   const [responsibles, setResponsibles] = useState<Responsible[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
+  const [staff, setStaff] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const { fetchStudents } = useStudents();
   const { fetchResponsibles } = useResponsibles();
   const { fetchClasses } = useClasses();
+  const { fetchStaff } = useStaff();
 
   const loadStudents = async () => {
     setLoading(true);
@@ -76,10 +81,23 @@ const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
     setLoading(false);
   };
 
+  const loadStaff = async () => {
+    setLoading(true);
+    try {
+      const { data: staffData } = await fetchStaff();
+
+      setStaff(staffData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
     loadStudents();
     loadResponsibles();
     loadClasses();
+    loadStaff();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -89,6 +107,7 @@ const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
         students,
         responsibles,
         classes,
+        staff,
         loading,
         loadStudents,
         loadResponsibles,
