@@ -81,11 +81,20 @@ export function StudentsTableColumns(
 
         return (
           <div className='flex space-x-2'>
-            <span className='max-w-[500px] truncate font-medium'>
-              {classroom
-                ? `${classroom.grade} - ${translate.period[classroom.period]}`
-                : '-'}
-            </span>
+            {classroom ? (
+              <Link
+                className='w-full h-full underline'
+                href={{
+                  pathname: `/turmas/${classroom.id}`,
+                }}
+              >
+                <span className='max-w-[500px] truncate font-medium'>
+                  {`${classroom.grade} - ${translate.period[classroom.period]}`}
+                </span>
+              </Link>
+            ) : (
+              <span className='font-medium'>-</span>
+            )}
           </div>
         );
       },

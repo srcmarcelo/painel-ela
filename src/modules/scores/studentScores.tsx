@@ -9,7 +9,7 @@ export default function StudentsScores({ studentId, classId }: { studentId?: str
       </div>
       <div className='flex w-full rounded-md'>
         <div onClick={() => alert('Em breve')} className='w-full flex justify-center items-center bg-gray-400 text-white rounded-b-md cursor-pointer py-2'>
-          IMPRIMIR
+          IMPRIMIR (em breve)
         </div>
       </div>
     </div>

@@ -51,7 +51,7 @@ export default function Page() {
                       <p>{classroom.teacher}</p>
                     </>
                   ) : (
-                    <p>Sem professora</p>
+                    <p>Sem professora cadastrada</p>
                   )}
                 </div>
               )}

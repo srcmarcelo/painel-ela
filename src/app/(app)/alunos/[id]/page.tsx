@@ -78,9 +78,16 @@ export default function Page() {
                 {classroom && (
                   <div>
                     <p className='text-muted-foreground'>Turma</p>
-                    <p>{`${classroom.grade} - ${
-                      translate.period[classroom.period]
-                    }`}</p>
+                    <Link
+                      className='w-full h-full underline'
+                      href={{
+                        pathname: `/turmas/${classroom.id}`,
+                      }}
+                    >
+                      <p>{`${classroom.grade} - ${
+                        translate.period[classroom.period]
+                      }`}</p>
+                    </Link>
                   </div>
                 )}
                 {mother && (

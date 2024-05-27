@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { LogOut, MenuIcon } from 'lucide-react';
 import { useAuth } from '@/lib/auth/context';
+import Link from 'next/link';
 
 const NavbarItem = ({ href, label }: { href: string; label: string }) => {
   const pathName = usePathname();
@@ -29,14 +30,20 @@ const NavbarItem = ({ href, label }: { href: string; label: string }) => {
 
 export function Navbar() {
   const { push } = useRouter();
-  const {signOut} = useAuth();
+  const { signOut } = useAuth();
 
   return (
     <header className='flex justify-around items-center w-full py-4 bg-primary text-white'>
-      <div className='flex justify-center items-center space-x-1'>
-        <Image src='/pet.ico' height={40} width={40} alt='ELA LOGO' />
-        <p className='text-2xl font-serif'>ELA</p>
-      </div>
+      <Link
+        href={{
+          pathname: `/painel`,
+        }}
+      >
+        <div className='flex justify-center items-center space-x-1'>
+          <Image src='/pet.ico' height={40} width={40} alt='ELA LOGO' />
+          <p className='text-2xl font-serif'>ELA</p>
+        </div>
+      </Link>
       <ul className='flex justify-center items-center space-x-10 max-sm:hidden'>
         <NavbarItem href='/painel' label='Painel' />
         <NavbarItem href='/alunos' label='Alunos' />
@@ -56,10 +63,18 @@ export function Navbar() {
             <MenuIcon className='h-8 w-8' />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => push('/painel')}>Painel</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => push('/alunos')}>Alunos</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => push('/responsaveis')}>Responsáveis</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => push('/turmas')}>Turmas</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => push('/painel')}>
+              Painel
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => push('/alunos')}>
+              Alunos
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => push('/responsaveis')}>
+              Responsáveis
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => push('/turmas')}>
+              Turmas
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => signOut()}>
               <LogOut className='mr-2 h-4 w-4' />
