@@ -15,7 +15,7 @@ import Link from 'next/link';
 export function StudentsTableColumns(
   responsibles: { id: string; name: string }[],
   classes: { id: string; grade: string; period: string }[],
-  onDelete: (ids: string[]) => void
+  onDelete?: (ids: string[]) => void
 ): ColumnDef<Student>[] {
   return [
     {
@@ -150,12 +150,14 @@ export function StudentsTableColumns(
                 Visualizar
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className='cursor-pointer text-destructive'
-              onClick={() => onDelete([row.original.id])}
-            >
-              Deletar
-            </DropdownMenuItem>
+            {onDelete && (
+              <DropdownMenuItem
+                className='cursor-pointer text-destructive'
+                onClick={() => onDelete([row.original.id])}
+              >
+                Deletar
+              </DropdownMenuItem>
+            )}
           </DataTableRowActions>
         );
       },
