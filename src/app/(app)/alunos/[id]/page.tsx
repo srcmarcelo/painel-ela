@@ -9,6 +9,7 @@ import { useData } from '@/lib/data/context';
 import Link from 'next/link';
 import StudentsScores from '@/modules/scores/studentScores';
 import Loader from '@/components/loader';
+import StudentAbsences from '@/modules/students/components/student-absences';
 
 export default function Page() {
   const [edit, setEdit] = useState<boolean>(false);
@@ -131,6 +132,10 @@ export default function Page() {
                 )}
               </div>
             )}
+          </div>
+
+          <div className='mt-8'>
+            <StudentAbsences studentId={student?.id} />
           </div>
 
           <div className='mt-8'>

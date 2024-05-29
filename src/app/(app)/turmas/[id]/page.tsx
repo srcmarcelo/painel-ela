@@ -25,7 +25,7 @@ export default function Page() {
   );
 
   return (
-    <div className='py-6 px-12'>
+    <div className='py-6 px-12 max-sm:px-3'>
       {loading ? (
         <Loader />
       ) : (

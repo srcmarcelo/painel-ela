@@ -233,10 +233,7 @@ export function useClasses() {
   ): Promise<{ error?: Error | unknown }> {
     try {
       const createPromises = ids.map(async (id) => {
-        const { error } = await supabase
-          .from('absences')
-          .delete()
-          .eq('id', id);
+        const { error } = await supabase.from('absences').delete().eq('id', id);
 
         if (error) {
           return { error };
@@ -257,6 +254,36 @@ export function useClasses() {
     }
   }
 
+  async function fetchAbsencesByStudentId(studentId: string): Promise<{
+    data?: Absence[];
+    error?: Error | unknown;
+  }> {
+    try {
+      const { data, error } = await supabase
+        .from('absences')
+        .select()
+        .eq('student_id', studentId)
+        .order('date', { ascending: false });
+
+      if (error) {
+        console.log('error:', error);
+        toast({
+          description: 'Erro ao buscar faltas',
+        });
+        return { error };
+      } else {
+        return { data };
+      }
+    } catch (error) {
+      console.log('error:', error);
+      toast({
+        variant: 'destructive',
+        description: 'Erro ao buscar faltas',
+      });
+      return { error };
+    }
+  }
+
   return {
     fetchClasses,
     fetchAttendanceByClassAndDate,
@@ -266,5 +293,6 @@ export function useClasses() {
     updateAbsences,
     deleteAbsences,
     createAbsences,
+    fetchAbsencesByStudentId,
   };
 }
