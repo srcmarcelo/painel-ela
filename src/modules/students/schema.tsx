@@ -6,7 +6,7 @@ export const studentSchema = z.object({
   id: z.string(),
   code: z.number(),
   name: z.string(),
-  date_of_birth: z.date(),
+  date_of_birth: z.string(),
   class_id: z.string(),
   responsible_id: z.string(),
   mother_id: z.string(),

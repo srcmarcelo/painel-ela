@@ -55,7 +55,7 @@ export default function StudentAbsences({ studentId }: { studentId?: string }) {
         <AccordionContent className='bg-white p-0 rounded-lg'>
           <div className='overflow-x-auto'>
             {absences.length === 0 ? (
-              <div className='w-full text-lg text-center text-muted-foreground py-2'>
+              <div className='w-full text-base text-center text-muted-foreground py-2'>
                 Sem faltas
               </div>
             ) : (

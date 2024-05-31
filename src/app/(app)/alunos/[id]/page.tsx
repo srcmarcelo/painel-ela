@@ -10,6 +10,9 @@ import Link from 'next/link';
 import StudentsScores from '@/modules/scores/studentScores';
 import Loader from '@/components/loader';
 import StudentAbsences from '@/modules/students/components/student-absences';
+import { parseISODateWithOffset } from '@/lib/utils';
+import { format } from 'date-fns';
+import StudentOccurrences from '@/modules/ocurrences/components/student-occurrences';
 
 export default function Page() {
   const [edit, setEdit] = useState<boolean>(false);
@@ -130,6 +133,17 @@ export default function Page() {
                     </Link>
                   </div>
                 )}
+                {student && (
+                  <div>
+                    <p className='text-muted-foreground'>Data de nascimento</p>
+                    <p>
+                      {format(
+                        parseISODateWithOffset(student.date_of_birth),
+                        'dd/MM/yyyy'
+                      )}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -137,6 +151,11 @@ export default function Page() {
           <div className='mt-8'>
             <StudentAbsences studentId={student?.id} />
           </div>
+          
+          <div className='mt-8'>
+            <StudentOccurrences studentId={student?.id} />
+          </div>
+
 
           <div className='mt-8'>
             <StudentsScores

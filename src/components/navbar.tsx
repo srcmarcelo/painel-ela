@@ -9,12 +9,14 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { LogOut, MenuIcon } from 'lucide-react';
 import { useAuth } from '@/lib/auth/context';
 import Link from 'next/link';
+import { useData } from '@/lib/data/context';
 
 const NavbarItem = ({ href, label }: { href: string; label: string }) => {
   const pathName = usePathname();
@@ -30,7 +32,10 @@ const NavbarItem = ({ href, label }: { href: string; label: string }) => {
 
 export function Navbar() {
   const { push } = useRouter();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
+  const { staff } = useData();
+
+  const userName = staff.find((member) => user?.email === member.email)?.name;
 
   return (
     <header className='flex justify-around items-center w-full py-4 bg-primary text-white'>
@@ -51,18 +56,13 @@ export function Navbar() {
         <NavbarItem href='/turmas' label='Turmas' />
       </ul>
       <div>
-        <Button
-          className='rounded-full bg-primary max-sm:hidden'
-          variant='outline'
-          onClick={() => signOut()}
-        >
-          SAIR
-        </Button>
         <DropdownMenu>
-          <DropdownMenuTrigger className='flex items-center sm:hidden'>
+          <DropdownMenuTrigger className='flex items-center'>
             <MenuIcon className='h-8 w-8' />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
+            <DropdownMenuLabel>{userName}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => push('/painel')}>
               Painel
             </DropdownMenuItem>

@@ -1,10 +1,11 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth/context';
 import React from 'react';
 
 const Login: React.FC = () => {
-  const { signIn } = useAuth();
+  const { signIn, error } = useAuth();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -13,8 +14,8 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className='flex flex-1 h-screen bg-gray-100'>
-      <div className='m-auto p-8 bg-white rounded shadow-md sm:w-96'>
+    <div className='flex flex-col items-center justify-center flex-1 h-screen bg-gray-100'>
+      <div className='p-8 bg-white rounded shadow-md sm:w-96'>
         <div className='flex justify-center items-center w-full'>
           <h2 className='text-3xl text-blue-500 font-semibold font-sans mb-4'>
             Painel ELA
@@ -41,7 +42,7 @@ const Login: React.FC = () => {
               autoComplete='current-password'
               type='password'
               id='password'
-              placeholder='******'
+              placeholder='***********'
             />
           </div>
           <button
@@ -52,6 +53,19 @@ const Login: React.FC = () => {
           </button>
         </form>
       </div>
+      {error && (
+        <div className='text-red-500 text-center mt-8'>Erro ao fazer login</div>
+      )}
+      <Button className='bg-green-500 text-white text-center rounded-md shadow-md mt-8 sm:w-96'>
+        <a
+          href='https://wa.me/qr/HQCNXJURVAAOE1'
+          target='_blank'
+          rel='noopener noreferrer'
+          className='w-full'
+        >
+          Falar com desenvolvedor
+        </a>
+      </Button>
     </div>
   );
 };

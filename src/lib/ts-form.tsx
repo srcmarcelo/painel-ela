@@ -44,6 +44,7 @@ import { XIcon } from 'lucide-react';
 import { BRL_CPF, BRL_PHONE, BR_DATE, maskToCurrency } from './masks';
 import ptBR from 'date-fns/locale/pt-BR';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 
 export type Option = {
   value: string;
@@ -58,6 +59,26 @@ function TextField() {
     <div className='space-y-1'>
       <span>{label}</span>
       <Input
+        value={field.value ? field.value : ''} // conditional to prevent "uncontrolled to controlled" react warning
+        onChange={(e) => {
+          field.onChange(e.target.value);
+        }}
+      />
+      {error?.errorMessage && (
+        <span className='text-destructive'>{error?.errorMessage}</span>
+      )}
+    </div>
+  );
+}
+
+function LongTextField() {
+  const { field, error } = useTsController<string>();
+  const { label } = useDescription();
+
+  return (
+    <div className='space-y-1'>
+      <span>{label}</span>
+      <Textarea
         value={field.value ? field.value : ''} // conditional to prevent "uncontrolled to controlled" react warning
         onChange={(e) => {
           field.onChange(e.target.value);
@@ -471,7 +492,7 @@ function DatePickerField({ disablePastDate }: { disablePastDate?: boolean }) {
           <Button
             variant={'outline'}
             className={cn(
-              'w-[240px] pl-3 text-left font-normal',
+              'pl-3 text-left font-normal',
               !field.value && 'text-muted-foreground'
             )}
           >
@@ -523,6 +544,10 @@ function DateInputField() {
 
 export const formFields = {
   text: z.string({ required_error: 'Campo obrigatório' }),
+  long_text: createUniqueFieldSchema(
+    z.string({ required_error: 'Campo obrigatório' }),
+    'long_text'
+  ),
   number: z.number({ required_error: 'Campo obrigatório' }),
   select: createUniqueFieldSchema(
     z.string({ required_error: 'Campo obrigatório' }),
@@ -579,6 +604,7 @@ export const formFields = {
 
 const mapping = [
   [formFields.text, TextField] as const,
+  [formFields.long_text, LongTextField] as const,
   [formFields.number, NumberField] as const,
   [formFields.select, SelectField] as const,
   [formFields.text_phone, TextPhoneField] as const,

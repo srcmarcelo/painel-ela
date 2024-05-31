@@ -16,12 +16,12 @@ export default function Actions() {
         onClick={() => push('matricula')}
       />
       <ActionButton
-        content='Estoque de livros'
+        content='Gerar declaração (Em breve)'
         icon={<ArrowRight />}
         onClick={() => {}}
       />
       <ActionButton
-        content='Gerar declaração'
+        content='Últimas ocorrências (Em breve)'
         icon={<ArrowRight />}
         onClick={() => {}}
       />
