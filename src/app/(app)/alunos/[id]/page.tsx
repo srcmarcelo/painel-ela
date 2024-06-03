@@ -151,11 +151,10 @@ export default function Page() {
           <div className='mt-8'>
             <StudentAbsences studentId={student?.id} />
           </div>
-          
-          <div className='mt-8'>
-            <StudentOccurrences studentId={student?.id} />
-          </div>
 
+          <div className='mt-8'>
+            <StudentOccurrences student={student} />
+          </div>
 
           <div className='mt-8'>
             <StudentsScores

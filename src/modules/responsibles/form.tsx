@@ -6,6 +6,8 @@ import { FileText, Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useResponsibles } from './api';
 import { useData } from '@/lib/data/context';
+import { v4 } from 'uuid';
+import { useStudents } from '../students/api';
 
 const ResponsibleSchema = z.object({
   name: formFields.text.describe('Nome'),
@@ -25,6 +27,7 @@ export function ResponsibleForm({
 }) {
   const router = useRouter();
   const { createResponsibles, upadteResponsible } = useResponsibles();
+  const { upadteStudent } = useStudents();
   const { students, responsibles, loading, loadResponsibles } = useData();
 
   const defaultValues = useMemo(() => {
@@ -44,15 +47,33 @@ export function ResponsibleForm({
   const onSubmit = async (values: z.infer<typeof ResponsibleSchema>) => {
     const formattedValues: any = values || {};
 
+    const uuid = currentId || v4();
+
     Object.keys(formattedValues).forEach((key: any) => {
       if (formattedValues[key] === null) {
         delete formattedValues[key];
       }
     });
 
+    formattedValues.children.forEach((childId: string) => {
+      const child = students.find(student => childId === student.id);
+    
+      if (formattedValues.responsible_type === 'mother') {
+        if (child?.mother_id !== uuid) {
+          upadteStudent({mother_id: uuid}, childId)
+        }
+      }
+
+      if (formattedValues.responsible_type === 'father') {
+        if (child?.father_id !== uuid) {
+          upadteStudent({father_id: uuid}, childId)
+        }
+      }
+    });
+
     const { error } = currentId
-      ? await upadteResponsible(formattedValues, currentId)
-      : await createResponsibles(formattedValues);
+      ? await upadteResponsible(formattedValues, uuid)
+      : await createResponsibles({ id: uuid, ...formattedValues });
 
     if (!error) {
       loadResponsibles();

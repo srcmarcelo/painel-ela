@@ -72,7 +72,10 @@ export function useOccurrences() {
   ): Promise<{ error?: Error | unknown }> {
     try {
       const deletePromises = ids.map(async (id) => {
-        const { error } = await supabase.from('occurrences').delete().eq('id', id);
+        const { error } = await supabase
+          .from('occurrences')
+          .delete()
+          .eq('id', id);
 
         if (error) {
           toast({
@@ -97,9 +100,43 @@ export function useOccurrences() {
     }
   }
 
+  const notifyOccurenceWhatsappMessage = async (
+    to?: string,
+    teacherName?: string,
+    studentName?: string,
+    body?: string
+  ) => {
+    if (!to || !teacherName || !studentName || !body) {
+      toast({
+        variant: 'destructive',
+        description: 'Erro ao enviar WhatsApp',
+      });
+
+      return;
+    }
+
+    try {
+      await fetch('/api/send-whatsapp-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ to, teacherName, studentName, body }),
+      });
+
+      toast({ description: 'Mensagem do WhatsApp enviada com sucesso' });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: 'Erro ao enviar WhatsApp',
+      });
+    }
+  };
+
   return {
     fetchOccurrencesByStudentId,
     createOccurence,
     deleteOcurrences,
+    notifyOccurenceWhatsappMessage,
   };
 }

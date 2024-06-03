@@ -10,7 +10,7 @@ export function useClasses() {
     error?: Error | unknown;
   }> {
     try {
-      const { data, error } = await supabase.from('classes').select();
+      const { data, error } = await supabase.from('classes').select().order('grade', { ascending: true });
 
       if (error || !data) {
         console.log('error:', error);

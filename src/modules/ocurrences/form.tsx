@@ -5,6 +5,7 @@ import { z } from 'zod';
 const OccurrenceSchema = z.object({
   description: formFields.long_text.describe('Descrição'),
   type: formFields.select_option.describe('Tipo'),
+  notifyResponsibles: formFields.switch.describe('Notificar responsáveis?').optional(),
 });
 
 export function OccurrenceForm({
@@ -33,11 +34,12 @@ export function OccurrenceForm({
       schema={OccurrenceSchema}
       onSubmit={onSubmit}
     >
-      {({ type, description }) => {
+      {({ type, description, notifyResponsibles }) => {
         return (
           <div className='space-y-4 py-4 w-full mb-4'>
             {type}
             {description}
+            {notifyResponsibles}
           </div>
         );
       }}

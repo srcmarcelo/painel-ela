@@ -38,7 +38,7 @@ export function ClassesList() {
               </div>
               <p className='mt-2 text-gray-600'>
                 {classroom.teacher
-                  ? `Professora: ${classroom.teacher}`
+                  ? `${classroom.teacher}`
                   : 'Sem professora'}
               </p>
             </div>

@@ -4,7 +4,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from '@/components/ui/accordion';
-import { Badge, badgeVariants } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -33,6 +33,8 @@ import {
 import { TrashIcon } from 'lucide-react';
 import { useOccurrences } from '../api';
 import { CreateOcurrenceModal } from './create-occurence-modal';
+import { useData } from '@/lib/data/context';
+import { Student } from '@/modules/students/schema';
 
 type BadgeVariantType = {
   [key in occurrenceType]: 'success' | 'destructive' | 'default';
@@ -68,19 +70,21 @@ function DeleteConfirm({ onConfirm }: { onConfirm: () => void }) {
   );
 }
 
-export default function StudentOccurrences({
-  studentId,
-}: {
-  studentId?: string;
-}) {
+export default function StudentOccurrences({ student }: { student?: Student }) {
   const [occurrences, setOccurrences] = useState<Occurrence[]>([]);
 
-  const { fetchOccurrencesByStudentId, deleteOcurrences, createOccurence } =
-    useOccurrences();
+  const {
+    fetchOccurrencesByStudentId,
+    deleteOcurrences,
+    createOccurence,
+    notifyOccurenceWhatsappMessage,
+  } = useOccurrences();
+
+  const { responsibles, classes } = useData();
 
   async function fetchOccurrences() {
-    if (!studentId) return;
-    const { data, error } = await fetchOccurrencesByStudentId(studentId);
+    if (!student?.id) return;
+    const { data, error } = await fetchOccurrencesByStudentId(student.id);
 
     if (!error && data) setOccurrences(data);
   }
@@ -92,19 +96,59 @@ export default function StudentOccurrences({
   }
 
   async function handleCreate(values: any) {
+    if (!student?.id) return;
+
     const formattedValues = {
-      ...values,
-      student_id: studentId,
+      student_id: student.id,
+      type: values.type,
+      description: values.description,
     };
     const { error } = await createOccurence(formattedValues);
 
-    if (!error) fetchOccurrences();
+    if (!error) {
+      if (values.notifyResponsibles) {
+        const responsible = responsibles.find(
+          (responsible) => responsible.id === student.responsible_id
+        );
+        const classroom = classes.find(
+          (classroom) => classroom.id === student.class_id
+        );
+
+        const numbersToNotify = [responsible?.phone];
+
+        if (student.mother_id && student.mother_id !== responsible?.id) {
+          const mother = responsibles.find(
+            (responsible) => responsible.id === student.mother_id
+          );
+          numbersToNotify.push(mother?.phone);
+        }
+
+        if (student.father_id && student.father_id !== responsible?.id) {
+          const father = responsibles.find(
+            (responsible) => responsible.id === student.father_id
+          );
+          numbersToNotify.push(father?.phone);
+        }
+
+        numbersToNotify.forEach((number) => {
+          notifyOccurenceWhatsappMessage(
+            number,
+            classroom?.teacher ||
+              `do ${classroom?.grade} - ${classroom?.period}`,
+            student.name,
+            values.description
+          );
+        });
+      }
+
+      fetchOccurrences();
+    }
   }
 
   useEffect(() => {
     fetchOccurrences();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [studentId]);
+  }, [student]);
 
   const BadgeVariant: BadgeVariantType = {
     good: 'success',
