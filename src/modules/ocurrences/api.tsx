@@ -107,11 +107,6 @@ export function useOccurrences() {
     body?: string
   ) => {
     if (!to || !teacherName || !studentName || !body) {
-      toast({
-        variant: 'destructive',
-        description: 'Erro ao enviar WhatsApp',
-      });
-
       return;
     }
 

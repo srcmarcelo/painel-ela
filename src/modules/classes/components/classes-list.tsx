@@ -36,14 +36,9 @@ export function ClassesList() {
                   {translate.period[classroom.period]}
                 </span>
               </div>
-              <p className='mt-2 text-gray-600'>
-                {classroom.teacher
-                  ? `${classroom.teacher}`
-                  : 'Sem professora'}
-              </p>
             </div>
             <div className='px-6 py-4'>
-              <div className='text-sm text-gray-600'>
+              <div className='text-base text-gray-600'>
                 <p className='font-semibold'>Alunos:</p>
                 <p className='mt-1'>{classStudents.length}</p>
               </div>

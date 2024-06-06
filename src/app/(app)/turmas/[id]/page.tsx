@@ -41,23 +41,6 @@ export default function Page() {
             </div>
           </div>
 
-          <div className='mt-4'>
-            <div className='border rounded-md p-4 space-y-4'>
-              {classroom && (
-                <div>
-                  {classroom.teacher ? (
-                    <>
-                      <p className='text-muted-foreground'>Professora</p>
-                      <p>{classroom.teacher}</p>
-                    </>
-                  ) : (
-                    <p>Sem professora cadastrada</p>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
           <div className='mt-8'>
             <DataTable
               data={classStudents || []}

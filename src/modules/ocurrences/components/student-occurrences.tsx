@@ -35,6 +35,7 @@ import { useOccurrences } from '../api';
 import { CreateOcurrenceModal } from './create-occurence-modal';
 import { useData } from '@/lib/data/context';
 import { Student } from '@/modules/students/schema';
+import { useAuth } from '@/lib/auth/context';
 
 type BadgeVariantType = {
   [key in occurrenceType]: 'success' | 'destructive' | 'default';
@@ -80,7 +81,10 @@ export default function StudentOccurrences({ student }: { student?: Student }) {
     notifyOccurenceWhatsappMessage,
   } = useOccurrences();
 
-  const { responsibles, classes } = useData();
+  const { responsibles, staff } = useData();
+  const { user } = useAuth();
+
+  const userName = staff.find((member) => user?.email === member.email)?.name;
 
   async function fetchOccurrences() {
     if (!student?.id) return;
@@ -110,9 +114,6 @@ export default function StudentOccurrences({ student }: { student?: Student }) {
         const responsible = responsibles.find(
           (responsible) => responsible.id === student.responsible_id
         );
-        const classroom = classes.find(
-          (classroom) => classroom.id === student.class_id
-        );
 
         const numbersToNotify = [responsible?.phone];
 
@@ -133,8 +134,7 @@ export default function StudentOccurrences({ student }: { student?: Student }) {
         numbersToNotify.forEach((number) => {
           notifyOccurenceWhatsappMessage(
             number,
-            classroom?.teacher ||
-              `do ${classroom?.grade} - ${classroom?.period}`,
+            userName,
             student.name,
             values.description
           );

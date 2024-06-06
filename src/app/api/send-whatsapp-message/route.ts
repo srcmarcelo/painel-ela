@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
         2: studentName,
         3: body,
       }),
-      contentSid: 'HX6bf8df52aebd9f6ea796797e12063c1a',
+      contentSid: 'HXea8598e9362713f65daa29b17c69850c',
       from: 'MGb4e201177f9d9524366e0cebb1c64256',
       to: `whatsapp:+55${to}`,
     });
