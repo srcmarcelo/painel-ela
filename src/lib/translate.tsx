@@ -20,6 +20,7 @@ export const translate: {
     mother: 'Mãe',
     father: 'Pai',
     responsible: 'Responsável',
+    other: 'Outro',
   },
   columns: {
     code: 'Código',
