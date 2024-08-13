@@ -10,7 +10,11 @@ export function useClasses() {
     error?: Error | unknown;
   }> {
     try {
-      const { data, error } = await supabase.from('classes').select().order('grade', { ascending: true });
+      const { data, error } = await supabase
+        .from('classes')
+        .select()
+        .order('grade', { ascending: true })
+        .order('period', { ascending: true });
 
       if (error || !data) {
         console.log('error:', error);
@@ -26,6 +30,33 @@ export function useClasses() {
       toast({
         variant: 'destructive',
         description: 'Erro ao buscar turmas',
+      });
+      return { error };
+    }
+  }
+
+  async function fetchAttendances(): Promise<{
+    data?: Attendance[];
+    error?: Error | unknown;
+  }> {
+    try {
+      const { data, error } = await supabase.from('attendances').select();
+      if (error) {
+        console.log('error:', error);
+        toast({
+          description: 'Erro ao buscar chamadas',
+        });
+        return { error };
+      } else if (data.length > 0) {
+        return { data };
+      } else {
+        return {};
+      }
+    } catch (error) {
+      console.log('error:', error);
+      toast({
+        variant: 'destructive',
+        description: 'Erro ao buscar chamadas',
       });
       return { error };
     }
@@ -286,6 +317,7 @@ export function useClasses() {
 
   return {
     fetchClasses,
+    fetchAttendances,
     fetchAttendanceByClassAndDate,
     createAttendance,
     updateAttendance,
