@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import React from 'react';
-import { Button } from './ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +16,7 @@ import { LogOut, MenuIcon } from 'lucide-react';
 import { useAuth } from '@/lib/auth/context';
 import Link from 'next/link';
 import { useData } from '@/lib/data/context';
+import { AnnouncementModal } from './announcement-modal';
 
 const NavbarItem = ({ href, label }: { href: string; label: string }) => {
   const pathName = usePathname();
@@ -35,7 +35,7 @@ export function Navbar() {
   const { signOut, user } = useAuth();
   const { staff } = useData();
 
-  const userName = staff.find((member) => user?.email === member.email)?.name;
+  const userInfo = staff.find((member) => user?.email === member.email);
 
   return (
     <header className='flex justify-around items-center w-full py-4 bg-primary text-white'>
@@ -55,13 +55,13 @@ export function Navbar() {
         <NavbarItem href='/responsaveis' label='Responsáveis' />
         <NavbarItem href='/turmas' label='Turmas' />
       </ul>
-      <div>
+      <div className='flex'>
         <DropdownMenu>
           <DropdownMenuTrigger className='flex items-center'>
             <MenuIcon className='h-8 w-8' />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuLabel>{userName}</DropdownMenuLabel>
+            <DropdownMenuLabel>{userInfo?.name}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => push('/painel')}>
               Painel
@@ -82,6 +82,11 @@ export function Navbar() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        {/* {
+          ['admin', 'developer'].includes(`${userInfo?.role}`) && (
+            <AnnouncementModal />
+          )
+        } */}
       </div>
     </header>
   );
