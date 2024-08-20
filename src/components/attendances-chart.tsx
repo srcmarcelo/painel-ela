@@ -32,7 +32,7 @@ import {
 const chartConfig = {
   attendanceAmount: {
     label: 'Chamadas Realizadas',
-    color: '#2563eb',
+    color: '#2D88D7',
   },
 } satisfies ChartConfig;
 

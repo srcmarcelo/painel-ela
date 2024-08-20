@@ -5,6 +5,35 @@ import { Occurrence } from './schema';
 export function useOccurrences() {
   const { toast } = useToast();
 
+  async function fetchOccurrences(): Promise<{
+    data?: Occurrence[];
+    error?: Error | unknown;
+  }> {
+    try {
+      const { data, error } = await supabase
+        .from('occurrences')
+        .select()
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.log('error:', error);
+        toast({
+          description: 'Erro ao buscar ocorrências',
+        });
+        return { error };
+      } else {
+        return { data };
+      }
+    } catch (error) {
+      console.log('error:', error);
+      toast({
+        variant: 'destructive',
+        description: 'Erro ao buscar ocorrências',
+      });
+      return { error };
+    }
+  }
+
   async function fetchOccurrencesByStudentId(studentId: string): Promise<{
     data?: Occurrence[];
     error?: Error | unknown;
@@ -129,6 +158,7 @@ export function useOccurrences() {
   };
 
   return {
+    fetchOccurrences,
     fetchOccurrencesByStudentId,
     createOccurence,
     deleteOcurrences,

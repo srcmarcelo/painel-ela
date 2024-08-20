@@ -1,13 +1,37 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import StatisticCard from '@/components/statistic-card';
 import { useData } from '@/lib/data/context';
 import { cn } from '@/lib/utils';
 import { ClassNameValue } from 'tailwind-merge';
+import { BookMarkedIcon, Users2Icon } from 'lucide-react';
+import { useOccurrences } from '@/modules/ocurrences/api';
+import { Occurrence } from '@/modules/ocurrences/schema';
 
 export default function Cards({ classname }: { classname: ClassNameValue }) {
-  const { students, responsibles, loading, staff } = useData();
+  const { students, responsibles, loading: loadingData, staff } = useData();
+  const { fetchOccurrences } = useOccurrences();
+
+  const [occurrences, setOcurrences] = useState<Occurrence[]>([]);
+  const [loadingOccurrences, setLoadingOccurrences] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchDataOccurrences = async () => {
+      setLoadingOccurrences(true);
+      const { data, error } = await fetchOccurrences();
+
+      if (!error && data) setOcurrences(data);
+      setLoadingOccurrences(false);
+    };
+
+    fetchDataOccurrences();
+  }, []);
+
+  const loading = useMemo(
+    () => loadingOccurrences || loadingData,
+    [loadingOccurrences, loadingData]
+  );
 
   return (
     <div
@@ -18,22 +42,7 @@ export default function Cards({ classname }: { classname: ClassNameValue }) {
     >
       <StatisticCard
         title='Alunos'
-        icon={
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            viewBox='0 0 24 24'
-            fill='none'
-            stroke='currentColor'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            strokeWidth='2'
-            className='h-4 w-4 text-muted-foreground'
-          >
-            <path d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2' />
-            <circle cx='9' cy='7' r='4' />
-            <path d='M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75' />
-          </svg>
-        }
+        icon={<Users2Icon color='grey' size={18} />}
         content={
           <>
             <div className={cn('font-bold', loading ? 'text-lg' : 'text-2xl')}>
@@ -46,22 +55,7 @@ export default function Cards({ classname }: { classname: ClassNameValue }) {
 
       <StatisticCard
         title='Responsáveis'
-        icon={
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            viewBox='0 0 24 24'
-            fill='none'
-            stroke='currentColor'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            strokeWidth='2'
-            className='h-4 w-4 text-muted-foreground'
-          >
-            <path d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2' />
-            <circle cx='9' cy='7' r='4' />
-            <path d='M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75' />
-          </svg>
-        }
+        icon={<Users2Icon color='grey' size={18} />}
         content={
           <>
             <div className={cn('font-bold', loading ? 'text-lg' : 'text-2xl')}>
@@ -74,28 +68,26 @@ export default function Cards({ classname }: { classname: ClassNameValue }) {
 
       <StatisticCard
         title='Funcionários'
-        icon={
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            viewBox='0 0 24 24'
-            fill='none'
-            stroke='currentColor'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            strokeWidth='2'
-            className='h-4 w-4 text-muted-foreground'
-          >
-            <path d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2' />
-            <circle cx='9' cy='7' r='4' />
-            <path d='M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75' />
-          </svg>
-        }
+        icon={<Users2Icon color='grey' size={18} />}
         content={
           <>
             <div className={cn('font-bold', loading ? 'text-lg' : 'text-2xl')}>
               {loading ? 'carregando...' : staff.length}
             </div>
             <p className='text-xs text-muted-foreground'>cadastrados</p>
+          </>
+        }
+      />
+
+      <StatisticCard
+        title='Ocorrências'
+        icon={<BookMarkedIcon color='grey' size={18} />}
+        content={
+          <>
+            <div className={cn('font-bold', loading ? 'text-lg' : 'text-2xl')}>
+              {loading ? 'carregando...' : occurrences.length}
+            </div>
+            <p className='text-xs text-muted-foreground'>no ano</p>
           </>
         }
       />

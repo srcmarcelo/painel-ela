@@ -2,6 +2,7 @@
 
 import ActionButton from '@/components/action-button';
 import { AttendanceChart } from '@/components/attendances-chart';
+import { TopAbsents } from '@/components/top-absents';
 import { ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -17,6 +18,7 @@ export default function Actions() {
         onClick={() => push('matricula')}
       />
       <AttendanceChart />
+      <TopAbsents />
       <ActionButton
         content='Gerar declaração (Em breve)'
         icon={<ArrowRight />}

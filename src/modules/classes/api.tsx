@@ -165,6 +165,34 @@ export function useClasses() {
     }
   }
 
+  async function fetchAbsences(): Promise<{
+    data?: Absence[];
+    error?: Error | unknown;
+  }> {
+    try {
+      const { data, error } = await supabase
+        .from('absences')
+        .select()
+
+      if (error) {
+        console.log('error:', error);
+        toast({
+          description: 'Erro ao buscar faltas',
+        });
+        return { error };
+      } else {
+        return { data };
+      }
+    } catch (error) {
+      console.log('error:', error);
+      toast({
+        variant: 'destructive',
+        description: 'Erro ao buscar faltas',
+      });
+      return { error };
+    }
+  }
+
   async function fetchAbsencesByClassAndDate(
     classId: string,
     date: string
@@ -321,6 +349,7 @@ export function useClasses() {
     fetchAttendanceByClassAndDate,
     createAttendance,
     updateAttendance,
+    fetchAbsences,
     fetchAbsencesByClassAndDate,
     updateAbsences,
     deleteAbsences,
