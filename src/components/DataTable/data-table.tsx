@@ -17,6 +17,7 @@ interface DataTableProps<TData, TValue> {
   body?: React.ReactNode;
   pagination?: React.ReactNode;
   className?: ClassNameValue;
+  disableAutoPagination?: boolean;
   loadingComponent?: () => JSX.Element | null;
 }
 
@@ -27,12 +28,16 @@ function DataTable<TData, TValue>({
   toolbar,
   pagination,
   className,
+  disableAutoPagination,
   loadingComponent,
 }: DataTableProps<TData, TValue>) {
-
   return (
-    <DataTableProvider columns={columns} data={data}>
-      <div className={cn("space-y-4 w-full", className)}>
+    <DataTableProvider
+      columns={columns}
+      data={data}
+      disableAutoPagination={disableAutoPagination}
+    >
+      <div className={cn('space-y-4 w-full', className)}>
         {toolbar}
         {loadingComponent?.()}
         {body}

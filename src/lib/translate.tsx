@@ -6,6 +6,7 @@ export const translate: {
   columns: TranslateColumns;
   period: TranslateColumns;
   responsible_types: TranslateColumns;
+  user_types: TranslateColumns;
   status: TranslateColumns;
 } = {
   status: {
@@ -22,6 +23,11 @@ export const translate: {
     responsible: 'Responsável',
     other: 'Outro',
   },
+  user_types: {
+    teacher: 'Professor(a)',
+    admin: 'Administrativo',
+    developer: 'Desenvolvedor',
+  },
   columns: {
     code: 'Código',
     name: 'Nome',
@@ -33,5 +39,8 @@ export const translate: {
     responsible_type: 'Tipo',
     mother_id: 'Mãe',
     father_id: 'Pai',
+    created_at: 'Cadastrado em',
+    role: 'Função',
+    cpf: 'CPF',
   },
 };

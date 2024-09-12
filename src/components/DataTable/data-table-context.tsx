@@ -18,12 +18,13 @@ import {
 export type DataTableProps<TData extends RowData, TValue = unknown> = {
   data: TData[];
   columns: ColumnDef<TData, TValue>[];
+  disableAutoPagination?: boolean;
 };
 
 export function useDataTable<TData extends RowData, TValue = unknown>(
   props: DataTableProps<TData, TValue>,
 ) {
-  const { data, columns } = props;
+  const { data, columns, disableAutoPagination } = props;
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -42,6 +43,7 @@ export function useDataTable<TData extends RowData, TValue = unknown>(
       columnFilters,
     },
     enableRowSelection: true,
+    manualPagination: disableAutoPagination,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

@@ -54,6 +54,9 @@ export function Navbar() {
         <NavbarItem href='/alunos' label='Alunos' />
         <NavbarItem href='/responsaveis' label='Responsáveis' />
         <NavbarItem href='/turmas' label='Turmas' />
+        {userInfo && ['developer', 'admin'].includes(userInfo.role) && (
+          <NavbarItem href='/funcionarios' label='Funcionários' />
+        )}
       </ul>
       <div className='flex'>
         <DropdownMenu>
@@ -75,6 +78,11 @@ export function Navbar() {
             <DropdownMenuItem onClick={() => push('/turmas')}>
               Turmas
             </DropdownMenuItem>
+            {userInfo && ['developer', 'admin'].includes(userInfo.role) && (
+              <DropdownMenuItem onClick={() => push('/funcionarios')}>
+                Funcionários
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => signOut()}>
               <LogOut className='mr-2 h-4 w-4' />

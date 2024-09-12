@@ -45,7 +45,7 @@ export function DataTableToolbar({
         )}
       </div>
       <div className='space-x-2 items-center flex'>
-        {selectedItems?.length > 0 && (
+        {selectedItems?.length > 0 && onDelete && (
           <Button
             size='sm'
             variant='outline'
