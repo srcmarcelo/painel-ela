@@ -2,7 +2,6 @@
 
 import { Student } from '@/modules/students/schema';
 import { Avatar } from './avatar';
-import { Absence } from '@/modules/classes/schema';
 import { useData } from '@/lib/data/context';
 import { useEffect, useMemo, useState } from 'react';
 import { useClasses } from '@/modules/classes/api';
@@ -17,43 +16,34 @@ import { translate } from '@/lib/translate';
 import Link from 'next/link';
 
 type StudentWithAbsences = {
-  student: Student;
+  student?: Student;
   absenceCount: number;
 };
 
-function getTop5StudentsWithMostAbsences(
-  absences: Absence[],
+type StudentAbsence = {
+  student_id: string;
+  absence_count: number;
+};
+
+function getTop10StudentsWithMostAbsences(
+  absences: StudentAbsence[],
   students: Student[]
 ): StudentWithAbsences[] {
-  // Create a map to count absences by student_id
-  const absenceCountMap: Record<string, number> = {};
-
-  absences.forEach((absence) => {
-    if (absence.student_id in absenceCountMap) {
-      absenceCountMap[absence.student_id]++;
-    } else {
-      absenceCountMap[absence.student_id] = 1;
-    }
+  const sortedStudentsWithAbsences = absences.map((absence) => {
+    return {
+      student: students.find((student) => student.id === absence.student_id),
+      absenceCount: absence.absence_count,
+    };
   });
 
-  // Sort the students by the number of absences in descending order and map to StudentWithAbsences
-  const sortedStudentsWithAbsences = students
-    .filter((student) => absenceCountMap[student.id] !== undefined) // Only include students with absences
-    .map((student) => ({
-      student,
-      absenceCount: absenceCountMap[student.id] || 0,
-    }))
-    .sort((a, b) => b.absenceCount - a.absenceCount);
-
-  // Return the top 5 students with their absence counts
-  return sortedStudentsWithAbsences.slice(0, 5);
+  return sortedStudentsWithAbsences;
 }
 
 export function TopAbsents() {
   const { students, loading: loadingData, classes } = useData();
   const { fetchAbsences } = useClasses();
 
-  const [absences, setAbsences] = useState<Absence[]>([]);
+  const [absences, setAbsences] = useState<StudentAbsence[]>([]);
   const [loadingAbsences, setLoadingAbsences] = useState<boolean>(false);
 
   useEffect(() => {
@@ -74,7 +64,7 @@ export function TopAbsents() {
   );
 
   const sortedStudents = useMemo(
-    () => (loading ? [] : getTop5StudentsWithMostAbsences(absences, students)),
+    () => (loading ? [] : getTop10StudentsWithMostAbsences(absences, students)),
     [loading, absences, students]
   );
 
@@ -82,7 +72,7 @@ export function TopAbsents() {
     if (!student) return;
 
     const classroom = classes.find(
-      (classroom) => classroom.id === student.student.class_id
+      (classroom) => classroom.id === student?.student?.class_id
     );
 
     return (
@@ -94,11 +84,11 @@ export function TopAbsents() {
           <Link
             className='w-full h-full flex flex-col items-start justify-center p-1 hover:bg-slate-300 hover:rounded'
             href={{
-              pathname: `/alunos/${student.student.id}`,
+              pathname: `/alunos/${student?.student?.id}`,
             }}
           >
             <p className='text-sm font-medium leading-none'>
-              {student.student.name}
+              {student?.student?.name}
             </p>
             {classroom && (
               <p className='text-sm text-muted-foreground'>{`${
@@ -122,7 +112,7 @@ export function TopAbsents() {
             Alunos faltosos
           </CardTitle>
           <CardDescription>
-            Top 5 alunos mais faltosos desde 01/08/2024
+            Top 10 alunos mais faltosos desde 01/08/2024
           </CardDescription>
         </CardHeader>
         <CardContent className='p-6'>
@@ -138,7 +128,7 @@ export function TopAbsents() {
       <CardHeader>
         <CardTitle className='text-base sm:text-xl'>Alunos faltosos</CardTitle>
         <CardDescription>
-          Top 5 alunos mais faltosos desde 01/08/2024
+          Top 10 alunos mais faltosos desde 01/08/2024
         </CardDescription>
       </CardHeader>
       <CardContent className='p-6'>
@@ -148,6 +138,11 @@ export function TopAbsents() {
           <AbesentStudent student={sortedStudents[2]} />
           <AbesentStudent student={sortedStudents[3]} />
           <AbesentStudent student={sortedStudents[4]} />
+          <AbesentStudent student={sortedStudents[5]} />
+          <AbesentStudent student={sortedStudents[6]} />
+          <AbesentStudent student={sortedStudents[7]} />
+          <AbesentStudent student={sortedStudents[8]} />
+          <AbesentStudent student={sortedStudents[9]} />
         </div>
       </CardContent>
     </Card>

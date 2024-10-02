@@ -2,6 +2,11 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '../../../supabase';
 import { Absence, Attendance } from './schema';
 
+type StudentAbsence = {
+  student_id: string;
+  absence_count: number;
+}
+
 export function useClasses() {
   const { toast } = useToast();
 
@@ -166,13 +171,11 @@ export function useClasses() {
   }
 
   async function fetchAbsences(): Promise<{
-    data?: Absence[];
+    data?: StudentAbsence[];
     error?: Error | unknown;
   }> {
     try {
-      const { data, error } = await supabase
-        .from('absences')
-        .select()
+      const { data, error } = await supabase.rpc('get_top_absent_students');
 
       if (error) {
         console.log('error:', error);
