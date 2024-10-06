@@ -1,19 +1,19 @@
 'use client';
 
-import { MyForm, Option, formFields } from '@/lib/ts-form';
-import React from 'react';
-import { z } from 'zod';
+import { PageHeader } from '@/components/page-header';
+import { Spinner } from '@/components/Spinner';
 import { Button } from '@/components/ui/button';
-import { FileText, Loader } from 'lucide-react';
+import { useData } from '@/lib/data/context';
 import { translate } from '@/lib/translate';
+import { MyForm, Option, formFields } from '@/lib/ts-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { parse } from 'date-fns';
-import { useData } from '@/lib/data/context';
-import { PageHeader } from '@/components/page-header';
+import { FileText } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { useStudents } from '../students/api';
-import { useResponsibles } from '../responsibles/api';
 import { v4 } from 'uuid';
+import { z } from 'zod';
+import { useResponsibles } from '../responsibles/api';
+import { useStudents } from '../students/api';
 
 const RegistrationSchema = z.object({
   name: formFields.text.describe('Nome'),
@@ -36,7 +36,8 @@ export function EnrollmentForm({
   onSubmit?: () => void;
 }) {
   const { createStudents } = useStudents();
-  const { createResponsibles, upadteResponsible } = useResponsibles();
+  const { createResponsibles, updateResponsible, loadingSubmit } =
+    useResponsibles();
 
   const EnrollmentFormRef = useForm<z.infer<typeof RegistrationSchema>>({
     resolver: zodResolver(RegistrationSchema),
@@ -59,6 +60,27 @@ export function EnrollmentForm({
       new Date()
     );
 
+    const invoicesMonths = [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ];
+
+    const currentIndexMonth = new Date().getMonth();
+
+    const invoices = invoicesMonths.map(
+      (_, index) => index <= currentIndexMonth
+    );
+
     const studentFormattedValues: {
       [key: string]: any;
     } = {
@@ -67,6 +89,7 @@ export function EnrollmentForm({
       class_id: values.class_id,
       date_of_birth: parsedDateOfBirth,
       responsible_id: responsibleUUID,
+      invoices,
     };
 
     const reponsibleFormattedValues: {
@@ -78,7 +101,7 @@ export function EnrollmentForm({
       phone: values.phone,
       email: values.email,
       responsible_type: values.responsible_type,
-      children: [studentUUID]
+      children: [studentUUID],
     };
 
     if (values.responsible_type === 'mother') {
@@ -106,11 +129,16 @@ export function EnrollmentForm({
     });
 
     if (values.responsible_registered) {
-      const { error } = await createStudents(
-        studentFormattedValues
-      );
-      const { error: responsibleError } = await upadteResponsible(
-        {children: [...(responsibles.find(r => r.id === responsibleUUID)?.children || []), studentUUID]}, responsibleUUID
+      const { error } = await createStudents(studentFormattedValues);
+      const { error: responsibleError } = await updateResponsible(
+        {
+          children: [
+            ...(responsibles.find((r) => r.id === responsibleUUID)?.children ||
+              []),
+            studentUUID,
+          ],
+        },
+        responsibleUUID
       );
 
       if (!error && !responsibleError) {
@@ -118,11 +146,8 @@ export function EnrollmentForm({
         loadResponsibles();
         loadStudents();
       }
-
     } else {
-      const { error } = await createStudents(
-        studentFormattedValues
-      );
+      const { error } = await createStudents(studentFormattedValues);
       const { error: responsibleError } = await createResponsibles(
         reponsibleFormattedValues
       );
@@ -168,13 +193,18 @@ export function EnrollmentForm({
 
   return loading ? (
     <div className='flex flex-1 justify-center items-center'>
-      <Loader />
+      <Spinner />
     </div>
   ) : (
     <MyForm
       formProps={{ id: 'enrollment_form' }}
       renderAfter={() => (
-        <Button type='submit'>
+        <Button
+          type='submit'
+          className='gap-2'
+          isLoading={loadingSubmit}
+          loadingText='Salvando...'
+        >
           <FileText className='h-5 w-5' />
           Salvar
         </Button>

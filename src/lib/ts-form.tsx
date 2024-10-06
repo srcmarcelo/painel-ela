@@ -22,7 +22,7 @@ import { z } from 'zod';
 import InputMask from 'react-input-mask';
 import { cn, parseCurrencyToFloat } from './utils';
 import { Calendar } from '@/components/ui/calendar';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   CalendarIcon,
   CaretSortIcon,
@@ -74,18 +74,34 @@ function TextField() {
 function LongTextField() {
   const { field, error } = useTsController<string>();
   const { label } = useDescription();
+  
+  // Create a ref to access the Textarea DOM element
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Handler for key down events
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter') {
+      // Prevent the default action if you don't want a newline to be added
+      e.preventDefault();
+      
+      // Blur the textarea to remove focus
+      textareaRef.current?.blur();
+    }
+  };
 
   return (
     <div className='space-y-1'>
       <span>{label}</span>
       <Textarea
-        value={field.value ? field.value : ''} // conditional to prevent "uncontrolled to controlled" react warning
+        ref={textareaRef} // Attach the ref to the Textarea
+        value={field.value || ''} // Simplified conditional
         onChange={(e) => {
           field.onChange(e.target.value);
         }}
+        onKeyDown={handleKeyDown} // Attach the key down handler
       />
       {error?.errorMessage && (
-        <span className='text-destructive'>{error?.errorMessage}</span>
+        <span className='text-destructive'>{error.errorMessage}</span>
       )}
     </div>
   );

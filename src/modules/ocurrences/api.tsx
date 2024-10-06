@@ -1,34 +1,41 @@
-import { useToast } from '@/components/ui/use-toast';
-import { supabase } from '../../../supabase';
-import { Occurrence } from './schema';
+import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import { supabase } from "../../../supabase";
+import { Occurrence } from "./schema";
 
 export function useOccurrences() {
   const { toast } = useToast();
+
+  const [loading, setLoading] = useState(false);
 
   async function fetchOccurrences(): Promise<{
     data?: Occurrence[];
     error?: Error | unknown;
   }> {
     try {
+      setLoading(true);
       const { data, error } = await supabase
-        .from('occurrences')
+        .from("occurrences")
         .select()
-        .order('created_at', { ascending: false });
+        .order("created_at", { ascending: false });
 
       if (error) {
-        console.log('error:', error);
+        setLoading(false);
+        console.log("error:", error);
         toast({
-          description: 'Erro ao buscar ocorrências',
+          description: "Erro ao buscar ocorrências",
         });
         return { error };
       } else {
+        setLoading(false);
         return { data };
       }
     } catch (error) {
-      console.log('error:', error);
+      setLoading(false);
+      console.log("error:", error);
       toast({
-        variant: 'destructive',
-        description: 'Erro ao buscar ocorrências',
+        variant: "destructive",
+        description: "Erro ao buscar ocorrências",
       });
       return { error };
     }
@@ -39,26 +46,30 @@ export function useOccurrences() {
     error?: Error | unknown;
   }> {
     try {
+      setLoading(true);
       const { data, error } = await supabase
-        .from('occurrences')
+        .from("occurrences")
         .select()
-        .eq('student_id', studentId)
-        .order('created_at', { ascending: false });
+        .eq("student_id", studentId)
+        .order("created_at", { ascending: false });
 
       if (error) {
-        console.log('error:', error);
+        setLoading(false);
+        console.log("error:", error);
         toast({
-          description: 'Erro ao buscar ocorrências',
+          description: "Erro ao buscar ocorrências",
         });
         return { error };
       } else {
+        setLoading(false);
         return { data };
       }
     } catch (error) {
-      console.log('error:', error);
+      setLoading(false);
+      console.log("error:", error);
       toast({
-        variant: 'destructive',
-        description: 'Erro ao buscar ocorrências',
+        variant: "destructive",
+        description: "Erro ao buscar ocorrências",
       });
       return { error };
     }
@@ -69,28 +80,32 @@ export function useOccurrences() {
     error?: Error | unknown;
   }> {
     try {
+      setLoading(true);
       const { data, error } = await supabase
-        .from('occurrences')
+        .from("occurrences")
         .insert(values)
         .select();
 
       if (error || !data) {
-        console.log('error:', error);
+        setLoading(false);
+        console.log("error:", error);
         toast({
-          variant: 'destructive',
-          title: 'Erro ao registrar ocorrência',
+          variant: "destructive",
+          title: "Erro ao registrar ocorrência",
           description: error.message,
         });
         return { data, error };
       } else {
-        toast({ description: 'Ocorrência registrada com sucesso' });
+        setLoading(false);
+        toast({ description: "Ocorrência registrada com sucesso" });
         return { data, error };
       }
     } catch (error) {
-      console.log('error:', error);
+      setLoading(false);
+      console.log("error:", error);
       toast({
-        variant: 'destructive',
-        description: 'Erro ao registrar ocorrência',
+        variant: "destructive",
+        description: "Erro ao registrar ocorrência",
       });
       return { error };
     }
@@ -100,30 +115,35 @@ export function useOccurrences() {
     ids: string[]
   ): Promise<{ error?: Error | unknown }> {
     try {
+      setLoading(true);
       const deletePromises = ids.map(async (id) => {
         const { error } = await supabase
-          .from('occurrences')
+          .from("occurrences")
           .delete()
-          .eq('id', id);
+          .eq("id", id);
 
         if (error) {
+          setLoading(false);
           toast({
-            variant: 'destructive',
-            description: 'Erro ao excluir ocorrência',
+            variant: "destructive",
+            description: "Erro ao excluir ocorrência",
           });
           return { error };
         } else {
-          toast({ description: 'Ocorrência excluída com sucesso' });
+          setLoading(false);
+          toast({ description: "Ocorrência excluída com sucesso" });
         }
       });
+      setLoading(false);
 
       await Promise.all(deletePromises);
 
       return {};
     } catch (error) {
+      setLoading(false);
       toast({
-        variant: 'destructive',
-        description: 'Erro ao excluir ocorrência',
+        variant: "destructive",
+        description: "Erro ao excluir ocorrência",
       });
       return { error };
     }
@@ -140,19 +160,23 @@ export function useOccurrences() {
     }
 
     try {
-      await fetch('/api/send-whatsapp-message', {
-        method: 'POST',
+      setLoading(true);
+      await fetch("/api/send-whatsapp-message", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ to, teacherName, studentName, body }),
       });
 
-      toast({ description: 'Mensagem do WhatsApp enviada com sucesso' });
+      setLoading(false);
+
+      toast({ description: "Mensagem do WhatsApp enviada com sucesso" });
     } catch (error) {
+      setLoading(false);
       toast({
-        variant: 'destructive',
-        description: 'Erro ao enviar WhatsApp',
+        variant: "destructive",
+        description: "Erro ao enviar WhatsApp",
       });
     }
   };
@@ -163,5 +187,7 @@ export function useOccurrences() {
     createOccurence,
     deleteOcurrences,
     notifyOccurenceWhatsappMessage,
+    loading,
+    setLoading,
   };
 }

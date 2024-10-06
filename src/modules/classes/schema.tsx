@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // We're keeping a simple non-relational schema here.
 // IRL, you will have a schema for your data models.
@@ -8,6 +8,7 @@ export const classSchema = z.object({
   grade: z.string(),
   period: z.string(),
   teacher: z.string(),
+  type: z.enum(["elementary", "infant"]),
 });
 
 export const attendanceSchema = z.object({

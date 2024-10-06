@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useClasses } from '@/modules/classes/api';
-import { Class } from '@/modules/classes/schema';
-import { useResponsibles } from '@/modules/responsibles/api';
-import { Responsible } from '@/modules/responsibles/schema';
-import { useStaff } from '@/modules/staff/api';
-import { User } from '@/modules/staff/schema';
-import { useStudents } from '@/modules/students/api';
-import { Student } from '@/modules/students/schema';
+import { useClasses } from "@/modules/classes/api";
+import { Class } from "@/modules/classes/schema";
+import { useResponsibles } from "@/modules/responsibles/api";
+import { Responsible } from "@/modules/responsibles/schema";
+import { useStaff } from "@/modules/staff/api";
+import { User } from "@/modules/staff/schema";
+import { useStudents } from "@/modules/students/api";
+import { Student } from "@/modules/students/schema";
 import React, {
   createContext,
-  useState,
+  ReactNode,
   useContext,
   useEffect,
-  ReactNode,
-} from 'react';
+  useState,
+} from "react";
 
 interface DataContextProps {
   students: Student[];
@@ -22,6 +22,7 @@ interface DataContextProps {
   classes: Class[];
   staff: User[];
   loading: boolean;
+  loadingClasses: boolean;
   loadStudents: () => void;
   loadResponsibles: () => void;
   loadClasses: () => void;
@@ -39,6 +40,7 @@ const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
   const [classes, setClasses] = useState<Class[]>([]);
   const [staff, setStaff] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadingClasses, setLoadingClasses] = useState<boolean>(true);
 
   const { fetchStudents } = useStudents();
   const { fetchResponsibles } = useResponsibles();
@@ -52,7 +54,7 @@ const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
 
       setStudents(studentsData);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
     setLoading(false);
   };
@@ -64,21 +66,21 @@ const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
 
       setResponsibles(responsiblesData);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
     setLoading(false);
   };
 
   const loadClasses = async () => {
-    setLoading(true);
+    setLoadingClasses(true);
     try {
       const { data: classesData } = await fetchClasses();
 
       setClasses(classesData);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
-    setLoading(false);
+    setLoadingClasses(false);
   };
 
   const loadStaff = async () => {
@@ -88,7 +90,7 @@ const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
 
       setStaff(staffData);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
     setLoading(false);
   };
@@ -108,7 +110,8 @@ const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
         responsibles,
         classes,
         staff,
-        loading,
+        loading: loadingClasses || loading,
+        loadingClasses,
         loadStudents,
         loadResponsibles,
         loadClasses,
@@ -122,7 +125,7 @@ const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
 const useData = (): DataContextProps => {
   const context = useContext(DataContext);
   if (!context) {
-    throw new Error('useData must be used within a DataProvider');
+    throw new Error("useData must be used within a DataProvider");
   }
   return context;
 };

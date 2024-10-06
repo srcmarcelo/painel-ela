@@ -1,15 +1,15 @@
-import { MyForm, Option, formFields } from '@/lib/ts-form';
-import React, { useMemo } from 'react';
-import { object, z } from 'zod';
 import { Button } from '@/components/ui/button';
-import { FileText, Loader } from 'lucide-react';
+import { useData } from '@/lib/data/context';
 import { translate } from '@/lib/translate';
-import { useRouter } from 'next/navigation';
-import { useStudents } from './api';
+import { MyForm, Option, formFields } from '@/lib/ts-form';
+import { parseISODateWithOffset } from '@/lib/utils';
 import { format, parse } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { parseISODateWithOffset } from '@/lib/utils';
-import { useData } from '@/lib/data/context';
+import { FileText, Loader } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useMemo } from 'react';
+import { z } from 'zod';
+import { useStudents } from './api';
 import { Student } from './schema';
 
 const StudentSchema = z.object({
@@ -30,7 +30,7 @@ export function StudentForm({
 }) {
   const router = useRouter();
 
-  const { createStudents, upadteStudent } = useStudents();
+  const { createStudents, updateStudent, loadingSubmit } = useStudents();
 
   const { students, responsibles, classes, loading, loadStudents } = useData();
 
@@ -79,9 +79,33 @@ export function StudentForm({
       }
     });
 
+    const invoicesMonths = [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ];
+
+    const currentIndexMonth = new Date().getMonth();
+
+    const invoices = invoicesMonths.map(
+      (_, index) => index <= currentIndexMonth
+    );
+
     const { error } = currentId
-      ? await upadteStudent(formattedValues, currentId)
-      : await createStudents(formattedValues);
+      ? await updateStudent(formattedValues, currentId)
+      : await createStudents({
+          ...formattedValues,
+          invoices,
+        });
 
     if (!error) {
       loadStudents();
@@ -122,8 +146,13 @@ export function StudentForm({
     <MyForm
       formProps={{ id: 'student_form' }}
       renderAfter={() => (
-        <Button type='submit'>
-          <FileText className='h-5 w-5' />
+        <Button
+          type='submit'
+          isLoading={loading}
+          loadingText='Salvando...'
+          className='gap-2'
+        >
+          <FileText className='h-5 w-5 ' />
           Salvar
         </Button>
       )}

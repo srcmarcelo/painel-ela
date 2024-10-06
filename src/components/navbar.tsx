@@ -1,7 +1,6 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import React from 'react';
 import {
@@ -16,7 +15,8 @@ import { LogOut, MenuIcon } from 'lucide-react';
 import { useAuth } from '@/lib/auth/context';
 import Link from 'next/link';
 import { useData } from '@/lib/data/context';
-import { AnnouncementModal } from './announcement-modal';
+import { SHORTNAME } from '../../infos';
+// import { AnnouncementModal } from './announcement-modal';
 
 const NavbarItem = ({ href, label }: { href: string; label: string }) => {
   const pathName = usePathname();
@@ -45,8 +45,7 @@ export function Navbar() {
         }}
       >
         <div className='flex justify-center items-center space-x-1'>
-          <Image src='/pet.ico' height={40} width={40} alt='ELA LOGO' />
-          <p className='text-2xl font-serif'>ELA</p>
+          <p className='text-2xl font-serif'>{SHORTNAME}</p>
         </div>
       </Link>
       <ul className='flex justify-center items-center space-x-10 max-sm:hidden'>
@@ -54,6 +53,7 @@ export function Navbar() {
         <NavbarItem href='/alunos' label='Alunos' />
         <NavbarItem href='/responsaveis' label='Responsáveis' />
         <NavbarItem href='/turmas' label='Turmas' />
+        {/* <NavbarItem href='/financeiro' label='Financeiro' /> */}
         {userInfo && ['developer', 'admin'].includes(userInfo.role) && (
           <NavbarItem href='/funcionarios' label='Funcionários' />
         )}
@@ -78,6 +78,9 @@ export function Navbar() {
             <DropdownMenuItem onClick={() => push('/turmas')}>
               Turmas
             </DropdownMenuItem>
+            {/* <DropdownMenuItem onClick={() => push('/financeiro')}>
+              Financeiro
+            </DropdownMenuItem> */}
             {userInfo && ['developer', 'admin'].includes(userInfo.role) && (
               <DropdownMenuItem onClick={() => push('/funcionarios')}>
                 Funcionários

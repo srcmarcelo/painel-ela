@@ -4,12 +4,13 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { ReactQueryClientProvider } from '@/components/react-query-client-provider';
 import { AuthProvider } from '@/lib/auth/context';
+import { METADATA_DESCRIPTION, METADATA_TITLE } from '../../infos';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'ELA - Painel de Controle',
-  description: 'Gerenciamento Geral',
+  title: METADATA_TITLE,
+  description: METADATA_DESCRIPTION,
 };
 
 export default function RootLayout({

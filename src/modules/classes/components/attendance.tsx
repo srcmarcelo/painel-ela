@@ -32,6 +32,7 @@ import { useClasses } from '../api';
 import { Absence, Attendance } from '../schema';
 import { cn } from '@/lib/utils';
 import { convertToGMT3 } from '@/utils/convertToGMT3';
+import Link from 'next/link';
 
 interface AttendanceFormProps {
   classId: string;
@@ -323,37 +324,42 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({
       <AttendanceConfirmation />
 
       <form onSubmit={handleSubmit}>
-        <div className='flex w-full space-x-4 justify-center items-center mb-2'>
-          <div>Data da chamada:</div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={'outline'}
-                className={cn(
-                  'w-[240px] pl-3 text-left font-normal',
-                  registeredAttendance
-                    ? 'border-green-500 text-green-500'
-                    : 'border-red-500 text-red-500'
-                )}
-              >
-                {date ? (
-                  format(date, 'dd/MM/yyyy')
-                ) : (
-                  <span>Selecione uma data</span>
-                )}
-                <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className='w-auto p-0' align='start'>
-              <Calendar
-                mode='single'
-                locale={ptBR}
-                selected={date}
-                onSelect={setDate}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+        <div className='text-center'>
+          <div className='flex w-full space-x-4 justify-center items-center mb-2'>
+            <div>Data da chamada:</div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={'outline'}
+                  className={cn(
+                    'w-[240px] pl-3 text-left font-normal',
+                    registeredAttendance
+                      ? 'border-green-500 text-green-500'
+                      : 'border-red-500 text-red-500'
+                  )}
+                >
+                  {date ? (
+                    format(date, 'dd/MM/yyyy')
+                  ) : (
+                    <span>Selecione uma data</span>
+                  )}
+                  <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className='w-auto p-0' align='start'>
+                <Calendar
+                  mode='single'
+                  locale={ptBR}
+                  selected={date}
+                  onSelect={setDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <p className='text-gray-500'>
+            Clique no nome do aluno para ver informações e registrar ocorrências
+          </p>
         </div>
 
         <Table>
@@ -368,7 +374,16 @@ const AttendanceForm: React.FC<AttendanceFormProps> = ({
             {students.map((student) => (
               <TableRow key={student.id}>
                 <TableCell>{student.code}</TableCell>
-                <TableCell>{student.name}</TableCell>
+                <TableCell>
+                  <Link
+                    className='w-full h-full underline text-center'
+                    href={{
+                      pathname: `/alunos/${student.id}`,
+                    }}
+                  >
+                    {student.name.toUpperCase()}
+                  </Link>
+                </TableCell>
                 <TableCell>
                   <Switch
                     checked={attendance[student.id] || false}

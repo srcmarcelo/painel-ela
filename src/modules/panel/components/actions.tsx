@@ -1,7 +1,7 @@
 'use client';
 
 import ActionButton from '@/components/action-button';
-import { AttendanceChart } from '@/components/attendances-chart';
+import { AttendanceChart } from '@/components/attendance-chart';
 import { TopAbsents } from '@/components/top-absents';
 import { ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';

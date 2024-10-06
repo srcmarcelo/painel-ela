@@ -1,21 +1,21 @@
-import { MyForm, Option, formFields } from '@/lib/ts-form';
-import React, { useMemo } from 'react';
-import { z } from 'zod';
-import { Button } from '@/components/ui/button';
-import { FileText, Loader } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useResponsibles } from './api';
-import { useData } from '@/lib/data/context';
-import { v4 } from 'uuid';
-import { useStudents } from '../students/api';
+import { Button } from "@/components/ui/button";
+import { useData } from "@/lib/data/context";
+import { MyForm, Option, formFields } from "@/lib/ts-form";
+import { FileText, Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useMemo } from "react";
+import { v4 } from "uuid";
+import { z } from "zod";
+import { useStudents } from "../students/api";
+import { useResponsibles } from "./api";
 
 const ResponsibleSchema = z.object({
-  name: formFields.text.describe('Nome'),
-  cpf: formFields.text_cpf.describe('CPF').optional(),
-  phone: formFields.text_phone.describe('Telefone').optional(),
-  email: formFields.text.describe('Email').email('Email inválido').optional(),
-  responsible_type: formFields.select_option.describe('Tipo'),
-  children: formFields.multi_select.describe('Crianças').optional(),
+  name: formFields.text.describe("Nome"),
+  cpf: formFields.text_cpf.describe("CPF").optional(),
+  phone: formFields.text_phone.describe("Telefone").optional(),
+  email: formFields.text.describe("Email").email("Email inválido").optional(),
+  responsible_type: formFields.select_option.describe("Tipo"),
+  children: formFields.multi_select.describe("Crianças").optional(),
 });
 
 export function ResponsibleForm({
@@ -26,8 +26,9 @@ export function ResponsibleForm({
   onSubmit?: (values: any) => void;
 }) {
   const router = useRouter();
-  const { createResponsibles, upadteResponsible } = useResponsibles();
-  const { upadteStudent } = useStudents();
+  const { createResponsibles, updateResponsible, loadingSubmit } =
+    useResponsibles();
+  const { updateStudent } = useStudents();
   const { students, responsibles, loading, loadResponsibles } = useData();
 
   const defaultValues = useMemo(() => {
@@ -56,28 +57,28 @@ export function ResponsibleForm({
     });
 
     formattedValues.children.forEach((childId: string) => {
-      const child = students.find(student => childId === student.id);
-    
-      if (formattedValues.responsible_type === 'mother') {
+      const child = students.find((student) => childId === student.id);
+
+      if (formattedValues.responsible_type === "mother") {
         if (child?.mother_id !== uuid) {
-          upadteStudent({mother_id: uuid}, childId)
+          updateStudent({ mother_id: uuid }, childId);
         }
       }
 
-      if (formattedValues.responsible_type === 'father') {
+      if (formattedValues.responsible_type === "father") {
         if (child?.father_id !== uuid) {
-          upadteStudent({father_id: uuid}, childId)
+          updateStudent({ father_id: uuid }, childId);
         }
       }
     });
 
     const { error } = currentId
-      ? await upadteResponsible(formattedValues, uuid)
+      ? await updateResponsible(formattedValues, uuid)
       : await createResponsibles({ id: uuid, ...formattedValues });
 
     if (!error) {
       loadResponsibles();
-      router.push('/responsaveis');
+      router.push("/responsaveis");
     }
   };
 
@@ -99,21 +100,26 @@ export function ResponsibleForm({
   });
 
   const responsibleTypes: Option[] = [
-    { label: 'Mãe', value: 'mother' },
-    { label: 'Pai', value: 'father' },
-    { label: 'Outro', value: 'other' },
+    { label: "Mãe", value: "mother" },
+    { label: "Pai", value: "father" },
+    { label: "Outro", value: "other" },
   ];
 
   return loading ? (
-    <div className='flex flex-1 justify-center items-center'>
+    <div className="flex flex-1 justify-center items-center">
       <Loader />
     </div>
   ) : (
     <MyForm
-      formProps={{ id: 'responsible_form' }}
+      formProps={{ id: "responsible_form" }}
       renderAfter={() => (
-        <Button type='submit'>
-          <FileText className='h-5 w-5' />
+        <Button
+          type="submit"
+          isLoading={loadingSubmit}
+          loadingText="Salvando..."
+          className="gap-2"
+        >
+          <FileText className="h-5 w-5 " />
           Salvar
         </Button>
       )}
@@ -131,17 +137,17 @@ export function ResponsibleForm({
     >
       {({ name, cpf, phone, email, responsible_type, children }) => {
         return (
-          <div className='space-y-8 py-4 w-full mb-4'>
-            <div className='grid grid-cols-2 gap-3 w-full max-md:grid-cols-1'>
+          <div className="space-y-8 py-4 w-full mb-4">
+            <div className="grid grid-cols-2 gap-3 w-full max-md:grid-cols-1">
               <div>{name}</div>
               <div>{email}</div>
             </div>
-            <div className='grid grid-cols-3 gap-3 w-full max-md:grid-cols-1'>
+            <div className="grid grid-cols-3 gap-3 w-full max-md:grid-cols-1">
               <div>{cpf}</div>
               <div>{phone}</div>
               <div>{responsible_type}</div>
             </div>
-            <div className='w-full'>
+            <div className="w-full">
               <div>{children}</div>
             </div>
           </div>

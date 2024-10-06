@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -6,13 +6,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Score } from './schema';
-import { Button } from '@/components/ui/button';
-import { MyForm, formFields } from '@/lib/ts-form';
-import { defaultScores } from './data';
-import { z } from 'zod';
-import { useScores } from './api';
+} from "@/components/ui/table";
+import { MyForm, formFields } from "@/lib/ts-form";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { z } from "zod";
+import { useScores } from "./api";
+import { defaultScores } from "./data";
+import { Score } from "./schema";
 
 const ScoreSchema = z.object({
   unit1: formFields.text.optional(),
@@ -26,14 +26,14 @@ const getAverage = (scores: (number | undefined)[]) => {
   let scoresTotal = 0;
 
   scores.forEach((score) => {
-    if (typeof score !== 'undefined') {
+    if (typeof score !== "undefined") {
       scoresSum += score;
       scoresTotal++;
     }
   });
 
   if (scoresTotal < 1) {
-    return '-';
+    return "-";
   }
 
   return scoresSum / scoresTotal;
@@ -47,7 +47,8 @@ export default function StudentScoreTable({
   classId?: string;
 }) {
   const [editArray, setEditArray] = useState<number[]>([]);
-  const { fetchScoresByStudentId, createScore, upadteScore } = useScores();
+  const { fetchScoresByStudentId, createScore, updateScore, loading } =
+    useScores();
 
   const [scores, setScores] = useState<Score[]>([]);
 
@@ -59,7 +60,7 @@ export default function StudentScoreTable({
 
   useEffect(() => {
     fetchScores();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [studentId]);
 
   const data: Score[] = useMemo(
@@ -68,7 +69,7 @@ export default function StudentScoreTable({
         const newScore = { ...e };
         newScore.score =
           scores.find((score) => score.type === e.type)?.score || [];
-        newScore.id = scores.find((score) => score.type === e.type)?.id || '';
+        newScore.id = scores.find((score) => score.type === e.type)?.id || "";
         return newScore;
       }),
     [scores]
@@ -81,8 +82,8 @@ export default function StudentScoreTable({
   ) => {
     const { id, type } = score;
     const newScores = Object.values(data);
-    if (id !== '') {
-      const {error} = await upadteScore({ score: newScores }, id);
+    if (id !== "") {
+      const { error } = await updateScore({ score: newScores }, id);
       !error && fetchScores();
     } else {
       const newScore = {
@@ -92,7 +93,7 @@ export default function StudentScoreTable({
         year: new Date().getFullYear(),
         type,
       };
-      const {error} = await createScore(newScore);
+      const { error } = await createScore(newScore);
       !error && fetchScores();
     }
     const newArray = [...editArray];
@@ -104,12 +105,12 @@ export default function StudentScoreTable({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className='text-center'>DISCIPLINA</TableHead>
-          <TableHead className='text-center'>1ª UNIDADE</TableHead>
-          <TableHead className='text-center'>2ª UNIDADE</TableHead>
-          <TableHead className='text-center'>3ª UNIDADE</TableHead>
-          <TableHead className='text-center'>4ª UNIDADE</TableHead>
-          <TableHead className='text-center bg-gray-200'>MÉDIA</TableHead>
+          <TableHead className="text-center">DISCIPLINA</TableHead>
+          <TableHead className="text-center">1ª UNIDADE</TableHead>
+          <TableHead className="text-center">2ª UNIDADE</TableHead>
+          <TableHead className="text-center">3ª UNIDADE</TableHead>
+          <TableHead className="text-center">4ª UNIDADE</TableHead>
+          <TableHead className="text-center bg-gray-200">MÉDIA</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -125,7 +126,7 @@ export default function StudentScoreTable({
 
           return (
             <TableRow key={index}>
-              <TableCell className='font-medium text-center'>
+              <TableCell className="font-medium text-center">
                 {score.type}
               </TableCell>
 
@@ -139,16 +140,18 @@ export default function StudentScoreTable({
                   >
                     {({ unit1, unit2, unit3, unit4 }) => (
                       <>
-                        <TableCell className='text-center'>{unit1}</TableCell>
-                        <TableCell className='text-center'>{unit2}</TableCell>
-                        <TableCell className='text-center'>{unit3}</TableCell>
-                        <TableCell className='text-center'>{unit4}</TableCell>
-                        <TableCell className='text-center'>
+                        <TableCell className="text-center">{unit1}</TableCell>
+                        <TableCell className="text-center">{unit2}</TableCell>
+                        <TableCell className="text-center">{unit3}</TableCell>
+                        <TableCell className="text-center">{unit4}</TableCell>
+                        <TableCell className="text-center">
                           <Button
-                            type='submit'
+                            type="submit"
                             form={`score_form_${index}`}
-                            variant='default'
-                            size='sm'
+                            variant="default"
+                            size="sm"
+                            isLoading={loading}
+                            loadingText="Salvando..."
                           >
                             Salvar
                           </Button>
@@ -159,29 +162,29 @@ export default function StudentScoreTable({
                 </TableCell>
               ) : (
                 <>
-                  <TableCell className='text-center'>
-                    {score.score[0] || '-'}
+                  <TableCell className="text-center">
+                    {score.score[0] || "-"}
                   </TableCell>
-                  <TableCell className='text-center'>
-                    {score.score[1] || '-'}
+                  <TableCell className="text-center">
+                    {score.score[1] || "-"}
                   </TableCell>
-                  <TableCell className='text-center'>
-                    {score.score[2] || '-'}
+                  <TableCell className="text-center">
+                    {score.score[2] || "-"}
                   </TableCell>
-                  <TableCell className='text-center'>
-                    {score.score[3] || '-'}
+                  <TableCell className="text-center">
+                    {score.score[3] || "-"}
                   </TableCell>
-                  <TableCell className='text-center'>
+                  <TableCell className="text-center">
                     {getAverage(score.score)}
                   </TableCell>
-                  <TableCell className='text-center'>
+                  <TableCell className="text-center">
                     <Button
                       onClick={() => {
                         const newArray = [...editArray, index];
                         setEditArray(newArray);
                       }}
-                      variant='outline'
-                      size='sm'
+                      variant="outline"
+                      size="sm"
                     >
                       Editar
                     </Button>

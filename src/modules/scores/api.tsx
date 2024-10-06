@@ -1,8 +1,10 @@
-import { useToast } from '@/components/ui/use-toast';
-import { supabase } from '../../../supabase';
+import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import { supabase } from "../../../supabase";
 
 export function useScores() {
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   // async function fetchStudents(): Promise<{
   //   data?: any;
@@ -35,25 +37,29 @@ export function useScores() {
     error?: Error | unknown;
   }> {
     try {
+      setLoading(true);
       const { data, error } = await supabase
-        .from('scores')
+        .from("scores")
         .select()
-        .eq('student_id', id);
-  
+        .eq("student_id", id);
+
       if (error || !data) {
-        console.log('error:', error);
+        setLoading(false);
+        console.log("error:", error);
         toast({
-          description: 'Erro ao buscar notas',
+          description: "Erro ao buscar notas",
         });
         return { error };
       } else {
+        setLoading(false);
         return { data: data, error };
       }
     } catch (error) {
-      console.log('error:', error);
+      setLoading(false);
+      console.log("error:", error);
       toast({
-        variant: 'destructive',
-        description: 'Erro ao buscar notas',
+        variant: "destructive",
+        description: "Erro ao buscar notas",
       });
       return { error };
     }
@@ -93,34 +99,37 @@ export function useScores() {
     error?: Error | unknown;
   }> {
     try {
+      setLoading(true);
       const { data, error } = await supabase
-        .from('scores')
+        .from("scores")
         .insert(values)
         .select();
 
       if (error || !data) {
-        console.log('error:', error);
+        setLoading(false);
+        console.log("error:", error);
         toast({
-          variant: 'destructive',
-          title: 'Erro ao registrar nota',
+          variant: "destructive",
+          title: "Erro ao registrar nota",
           description: error.message,
         });
         return { data, error };
       } else {
-        toast({ description: 'Nota registrada com sucesso' });
+        toast({ description: "Nota registrada com sucesso" });
         return { data, error };
       }
     } catch (error) {
-      console.log('error:', error);
+      setLoading(false);
+      console.log("error:", error);
       toast({
-        variant: 'destructive',
-        description: 'Erro ao registrar nota',
+        variant: "destructive",
+        description: "Erro ao registrar nota",
       });
       return { error };
     }
   }
 
-  async function upadteScore(
+  async function updateScore(
     values: any,
     id: string
   ): Promise<{
@@ -128,29 +137,33 @@ export function useScores() {
     error?: Error | unknown;
   }> {
     try {
+      setLoading(true);
       const { data, error } = await supabase
-        .from('scores')
+        .from("scores")
         .update(values)
-        .eq('id', id)
+        .eq("id", id)
         .select();
 
       if (error || !data) {
-        console.log('error:', error);
+        setLoading(false);
+        console.log("error:", error);
         toast({
-          variant: 'destructive',
-          title: 'Erro ao atualizar nota',
+          variant: "destructive",
+          title: "Erro ao atualizar nota",
           description: error.message,
         });
         return { data, error };
       } else {
-        toast({ description: 'Nota atualizada com sucesso' });
+        setLoading(true);
+        toast({ description: "Nota atualizada com sucesso" });
         return { data, error };
       }
     } catch (error) {
-      console.log('error:', error);
+      setLoading(true);
+      console.log("error:", error);
       toast({
-        variant: 'destructive',
-        description: 'Erro ao atualizar nota',
+        variant: "destructive",
+        description: "Erro ao atualizar nota",
       });
       return { error };
     }
@@ -191,7 +204,8 @@ export function useScores() {
     // fetchScoreById,
     fetchScoresByStudentId,
     createScore,
-    upadteScore,
+    updateScore,
     // deleteScores,
+    loading,
   };
 }

@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef } from "@tanstack/react-table";
+import * as React from "react";
 
-import { DataTableToolbar } from './data-table-toolbar';
-import { DataTablePagination } from './data-table-pagination';
-import { DataTableBody } from './data-table-body';
-import { DataTableProvider } from './data-table-context';
-import { ClassNameValue } from 'tailwind-merge';
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
+import { ClassNameValue } from "tailwind-merge";
+import { DataTableBody } from "./data-table-body";
+import { DataTableProvider } from "./data-table-context";
+import { DataTablePagination } from "./data-table-pagination";
+import { DataTableToolbar } from "./data-table-toolbar";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -19,6 +19,7 @@ interface DataTableProps<TData, TValue> {
   className?: ClassNameValue;
   disableAutoPagination?: boolean;
   loadingComponent?: () => JSX.Element | null;
+  isLoading?: boolean;
 }
 
 function DataTable<TData, TValue>({
@@ -30,14 +31,16 @@ function DataTable<TData, TValue>({
   className,
   disableAutoPagination,
   loadingComponent,
+  isLoading,
 }: DataTableProps<TData, TValue>) {
   return (
     <DataTableProvider
       columns={columns}
       data={data}
+      isLoading={isLoading}
       disableAutoPagination={disableAutoPagination}
     >
-      <div className={cn('space-y-4 w-full', className)}>
+      <div className={cn("space-y-4 w-full", className)}>
         {toolbar}
         {loadingComponent?.()}
         {body}

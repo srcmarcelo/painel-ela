@@ -2,6 +2,7 @@
 
 import { NextResponse, NextRequest } from 'next/server';
 import twilio from 'twilio';
+import { OCURRENCE_NOTIFY_TEMPLATE, TWILIO_SENDER } from '../../../../infos';
 
 export async function POST(request: NextRequest) {
   const { to, teacherName, studentName, body } = await request.json();
@@ -18,8 +19,8 @@ export async function POST(request: NextRequest) {
         2: studentName,
         3: body,
       }),
-      contentSid: 'HXea8598e9362713f65daa29b17c69850c',
-      from: 'MGb4e201177f9d9524366e0cebb1c64256',
+      contentSid: OCURRENCE_NOTIFY_TEMPLATE,
+      from: TWILIO_SENDER,
       to: `whatsapp:+55${to}`,
     });
     return NextResponse.json({ success: true, message: msg });
